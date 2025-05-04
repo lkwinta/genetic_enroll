@@ -1,8 +1,13 @@
+import re
 import argparse
+import sys
 from pathlib import Path
+
 import pandas as pd
 import numpy as np
-import re
+
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+from paths import ASSIGNMENTS, SCHEDULES, PREFERENCES
 
 def parse_distribution(dis):
     return np.array(dis) / sum(dis)
@@ -50,8 +55,8 @@ def main():
     parser.add_argument('-p', '--path_distribution', nargs='+', type=float, default=[0.45, 0.45, 0.1])
     parser.add_argument('-o', '--out')
 
-    # args = parser.parse_args(f'data/schedules/schedule_1.csv -n 220 -p 90 90 30'.split())
-    args = parser.parse_args()
+    args = parser.parse_args(f'data/schedules/schedule_1.csv -n 220 -p 90 90 30'.split())
+    # args = parser.parse_args()
 
     plan_path = Path(args.plan_path)
     plan_number = get_number_from_path(plan_path.stem)
