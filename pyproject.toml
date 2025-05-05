@@ -1,0 +1,27 @@
+[project]
+name = "genetic-enroll"
+version = "1.0.0"
+description = ""
+readme = "README.md"
+
+requires-python = "==3.11.*"
+
+dependencies = [
+    "ipykernel",
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "scipy",
+    "seaborn",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "ruff"
+]
+
+[tool.ruff.lint]
+ignore = [
+    "E731",  # lambda expressions
+]
