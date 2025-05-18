@@ -13,16 +13,16 @@ from paths import ASSIGNMENTS, SCHEDULES, PREFERENCES
 # Im bliżej 1.0 tym bardziej preferowane zajęcia 
 WEIGHTS = {
     'day': { 
-        'Pn': 0.5, 'Wt': 0.5, 'Sr': 0.5, 'Cz': 0.5, 'Pt': 0.5
+        'Pn': 0.0, 'Wt': 0.8, 'Sr': 1.0, 'Cz': 0.6, 'Pt': 0.1
     },
 
     'hour': {
-        '08:00': 0.5, '09:45': 0.5, '11:30': 0.5, '13:15': 0.5, '15:00': 0.5, '16:45': 0.5, '18:30': 0.5
+        '08:00': 0.1, '09:45': 0.5, '11:30': 0.6, '13:15': 1.0, '15:00': 0.8, '16:45': 0.4, '18:30': 0.1
     },
 
     'teacher': {
-        'Prowadzący-10': 0.6,
-        'Prowadzący-9': 0.6,
+        'Prowadzący-1': 1.0,
+        'Prowadzący-9': 0.5,
     }
 }
 
@@ -31,6 +31,7 @@ def preference_score(day_w, hour_w, teacher_w, noise):
     return np.clip((base + noise) * 10, 0, 10).round().astype(int)
 
 def generate_preferences(plan, assign, noise_sigma=0.05, weights=WEIGHTS):
+    plan = plan[plan['type'] != 'W'].copy()
     records = []
     
     subject_groups = {s: grp_df for s, grp_df in plan.groupby('subject')}
@@ -81,7 +82,6 @@ def main():
 
     # Wczytanie planu
     plan = pd.read_csv(plan_path, sep=None, engine='python')
-    plan = plan[plan['type'] != 'W'].copy()
     assign = pd.read_csv(assignment_path, sep=None, engine='python')
 
     # Generowanie preferencji
