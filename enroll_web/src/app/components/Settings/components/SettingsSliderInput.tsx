@@ -32,6 +32,9 @@ const SliderInput: React.FC<{
       max={max}
       step={step}
       className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer slider"
+      style={{
+        "--percentage": `${((value - min) / (max - min)) * 100}%`,
+      } as React.CSSProperties}
     />
     {description && (
       <p className={`text-xs settings-text-muted`}>{description}</p>
