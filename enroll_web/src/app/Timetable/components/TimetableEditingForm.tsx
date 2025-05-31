@@ -1,23 +1,25 @@
 import React from 'react';
 
-import { Lesson } from '../interfaces/Lesson';
+import { Lesson, LessonFields } from '../interfaces/Lesson';
 import ActionButton from './TimetableActionButton';
-import FormInput from './TimetableFormInput';
+import FormInput, { FormInputType } from './TimetableFormInput';
 import { Save, X } from 'lucide-react';
 
-const formFields: {name: "subject" | "teacher" | "room" | "notes", placeholder: string, type: "input" | "textarea"}[] = [
+const formFields: {name: LessonFields, placeholder: string, type: FormInputType}[] = [
   { name: 'subject', placeholder: 'Subject *', type: 'input' },
   { name: 'teacher', placeholder: 'Teacher', type: 'input' },
   { name: 'room', placeholder: 'Room', type: 'input' },
   { name: 'notes', placeholder: 'Notes', type: 'textarea' }
 ]
 
-const EditingForm: React.FC<{
+interface EditingFormProps {
   lessonForm: Omit<Lesson, 'id'>;
   onInputChange: (field: keyof Omit<Lesson, 'id'>, value: string) => void;
   onSave: () => void;
   onCancel: () => void;
-}> = ({ lessonForm, onInputChange, onSave, onCancel }) => (
+}
+
+const EditingForm: React.FC<EditingFormProps> = ({ lessonForm, onInputChange, onSave, onCancel }) => (
   <div className="p-2 border-2 rounded bg-blue-50 border-blue-200 dark:bg-gray-800 dark:border-blue-600">
     <div className="space-y-2">
       {formFields.map(({name, placeholder, type}) => (
@@ -44,4 +46,5 @@ const EditingForm: React.FC<{
   </div>
 );
 
+export type { EditingFormProps };
 export default EditingForm;

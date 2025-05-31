@@ -1,7 +1,9 @@
 import React from 'react';
 
+type FormInputType = 'input' | 'textarea';
+
 interface FormInputProps {
-  type: 'input' | 'textarea';
+  type: FormInputType;
   placeholder: string;
   value: string;
   onChange: (value: string) => void;
@@ -28,4 +30,5 @@ const FormInput: React.FC<FormInputProps> = ( {type, onChange, ...other}) => {
   );
 };
 
+export type { FormInputProps, FormInputType };
 export default FormInput;

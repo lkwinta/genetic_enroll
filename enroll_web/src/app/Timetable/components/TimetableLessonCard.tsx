@@ -5,12 +5,14 @@ import {Lesson} from '../interfaces/Lesson';
 import ActionButton from "./TimetableActionButton";
 import { Edit, Trash2 } from "lucide-react";
 
-const LessonCard: React.FC<{
+interface LessonCardProps {
   lesson: Lesson;
   colorClass: string;
   onEdit: () => void;
   onDelete: () => void;
-}> = ({ lesson, colorClass, onEdit, onDelete }) => (
+}
+
+const LessonCard: React.FC<LessonCardProps> = ({ lesson, colorClass, onEdit, onDelete }) => (
   <div className={`p-2 border rounded text-xs group relative ${colorClass}`}>
     <div className="font-semibold">{lesson.subject}</div>
     {lesson.teacher && <div className="text-gray-600 dark:text-gray-300">👨‍🏫 {lesson.teacher}</div>}
@@ -32,4 +34,5 @@ const LessonCard: React.FC<{
   </div>
 );
 
+export type { LessonCardProps };
 export default LessonCard;

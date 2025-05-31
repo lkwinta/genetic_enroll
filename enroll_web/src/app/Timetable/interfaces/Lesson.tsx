@@ -1,3 +1,5 @@
+export type LessonFields = "subject" | "teacher" | "room" | "notes";
+
 export interface Lesson {
   id: string;
   subject: string;
