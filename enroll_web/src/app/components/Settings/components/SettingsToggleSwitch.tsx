@@ -9,7 +9,7 @@ const ToggleSwitch: React.FC<{
   onChange: (checked: boolean) => void;
   description?: string;
 }> = ({ label, checked, onChange, description }) => (
-  <div className="flex items-start justify-between">
+  <div className="flex justify-between items-center">
     <div className="flex-1">
       <label className="text-sm font-medium settings-text-primary">
         {label}

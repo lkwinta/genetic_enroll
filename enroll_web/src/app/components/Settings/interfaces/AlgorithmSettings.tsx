@@ -1,55 +1,44 @@
-type MutationType = 'A' | 'B';
-type CrossoverType = 'A' | 'B'; 
+import {Dispatch, SetStateAction} from 'react';
 
-interface AlgorithmSettings {
+export type MutationType = 'A' | 'B';
+export type CrossoverType = 'A' | 'B'; 
+export type SelectionType = 'Truncation' | 'Tournament';
+
+export interface AlgorithmSettingsState {
     mutationType: MutationType;
     crossoverType: CrossoverType;
 
     generationsCount: number;
     populationSize: number;
 
-    earlyStopping: boolean;
+    earlyStoppingEnabled: boolean;
+    earlyStoppingStagnationEpochs: number;
+
+    selectionType: SelectionType;
+    tournamentSize: number;
 
     elitismRate: number;
     crossoverRate: number;
     mutationRate: number;
 }
 
-interface FitnessFunctionSettings {
+export interface FitnessFunctionSettingsState {
     preferenceWeight: number;
     capacityWeight: number;
     diversityWeight: number;
     penaltyWeight: number;
 }
 
-interface PerformanceSettings {
+export interface PerformanceSettingsState {
     enableParallelProcessing: boolean;
     threadCount: number;
 }
 
-interface CombinedSettings {
-    algorithm: AlgorithmSettings;
-    fitnessFunction: FitnessFunctionSettings;
-    performance: PerformanceSettings;
+export function updateSettingFactory<T>(setFunction: Dispatch<SetStateAction<T>>){
+    return (<K extends keyof T>(key: K, value: T[K]) => {
+        setFunction((prev) => ({
+            ...prev,
+            [key]: value,
+        }));
+    });
 };
-
-export default interface GASettings {
-  populationSize: number;
-  generations: number;
-  crossoverRate: number;
-  mutationRate: number;
-  elitismRate: number;
-  tournamentSize: number;
-  convergenceThreshold: number;
-  maxStagnation: number;
-  preferenceWeight: number;
-  capacityWeight: number;
-  diversityWeight: number;
-  penaltyWeight: number;
-  enableParallelProcessing: boolean;
-  enableAdaptiveMutation: boolean;
-  enableIslandModel: boolean;
-  islandCount: number;
-  migrationRate: number;
-  migrationInterval: number;
-}

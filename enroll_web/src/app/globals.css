@@ -29,7 +29,7 @@ input {
   cursor: text !important; /* This would override range input cursors */
 }
 
-button {
+button, select {
   cursor: pointer !important; /* This would override button cursors */
 }
 
