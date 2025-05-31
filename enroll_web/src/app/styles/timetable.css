@@ -8,12 +8,12 @@
     @apply flex items-center justify-between mb-6;
 }
 
-h1 .timetable-header {
+.timetable-header h1 {
     @apply text-3xl font-bold text-gray-800 dark:text-white;
 }
 
-div .timetable-header {
-    @apply gap-2 text-sm text-gray-600 dark:text-gray-300;
+.timetable-header div {
+    @apply flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300;
 }
 
 .timetable-grid {
