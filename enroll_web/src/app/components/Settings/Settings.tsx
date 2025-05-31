@@ -8,7 +8,7 @@ import {
     Settings as SettingsIcon,
 } from 'lucide-react';
 
-import AlgorithmSettingsSection from './AlgroithmSettingsSection';
+import AlgorithmSettingsSection from './AlgorithmSettingsSection';
 import FitnessFunctionSettingsSection from './FitnessFunctionSettingsSection';
 import PerformanceSettingsSection from './PerformanceSettingsSection';
 
@@ -65,17 +65,17 @@ const Settings: React.FC = () => {
     };
 
     return (
-        <div className={`min-h-screen transition-colors duration-300 settings-bg-primary`}>
+        <div className="settings-bg-primary settings-root">
             <div className="max-w-4xl mx-auto px-4 py-8">
                 {/* Header */}
                 <div className="mb-8">
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="settings-header">
                         <SettingsIcon className={`settings-text-primary `} size={32} />
-                        <h1 className={`text-3xl font-bold settings-text-primary `}>
+                        <h1 className="text-3xl font-bold settings-text-primary">
                             Genetic Algorithm Settings
                         </h1>
                     </div>
-                    <p className={`settings-text-secondary `}>
+                    <p className="settings-text-secondary">
                         Configure parameters for student assignment optimization with preferences
                     </p>
                 </div>
@@ -85,14 +85,14 @@ const Settings: React.FC = () => {
                     <button
                         onClick={saveSettings}
                         disabled={isSaving}
-                        className={`settings-button-primary px-4 py-2 rounded-lg  font-medium transition-colors flex items-center gap-2 disabled:opacity-50`}
+                        className="settings-button-primary settings-action-button disabled:opacity-50"
                     >
                         <Save size={16} />
                         {isSaving ? 'Saving...' : 'Save Settings'}
                     </button>
                     <button
                         onClick={resetSettings}
-                        className={`px-4 py-2 rounded-lg settings-button-secondary font-medium transition-colors flex items-center gap-2`}
+                        className="settings-button-secondary settings-action-button"
                     >
                         <RotateCcw size={16} />
                         Reset to Defaults

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import '../styles/settings.css';
 
-const NumberInput: React.FC<{
+interface NumberInputProps {
   label: string;
   value: number;
   onChange: (value: number) => void;
@@ -11,9 +11,11 @@ const NumberInput: React.FC<{
   max?: number;
   step?: number;
   description?: string;
-}> = ({ label, value, onChange, enabled=true, min = 0, max = 1000, step = 1, description }) => (
+}
+
+const NumberInput: FC<NumberInputProps> = ({ label, value, onChange, enabled=true, min = 0, max = 1000, step = 1, description }) => (
   <div className="space-y-2">
-    <label className="*:block text-sm font-medium settings-text-primary">
+    <label className="settings-number-input settings-text-primary">
       {label}
     </label>
     <input
@@ -24,7 +26,7 @@ const NumberInput: React.FC<{
       min={min}
       max={max}
       step={step}
-      className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors settings-input"
+      className="settings-number-input settings-input"
     />
     {description && (
       <p className={`text-xs settings-text-muted`}>{description}</p>
@@ -32,4 +34,5 @@ const NumberInput: React.FC<{
   </div>
 );
 
+export type { NumberInputProps };
 export default NumberInput;

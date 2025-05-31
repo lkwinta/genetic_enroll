@@ -27,7 +27,7 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         title="Performance Tips"
         message="Large population sizes and generation counts will significantly increase computation time. Consider using parallel processing for better performance with complex problems."
       />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="settings-group">
         <Dropdown
           label="Mutation Type"
           options={[
@@ -50,7 +50,7 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+      <div className="settings-group">
         <Dropdown
           label="Selection Type"
           options={[
@@ -71,7 +71,7 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
           description="Size of tournament for parent selection"
         />}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+        <div className="settings-group">
         <SliderInput
           label="Mutation Rate"
           value={settings.mutationRate}
@@ -92,7 +92,7 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+      <div className="settings-group">
         <NumberInput
           label="Max Generations"
           value={settings.generationsCount}
@@ -111,7 +111,7 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+      <div className="settings-group">
         <ToggleSwitch
           label="Enable Early Stopping"
           checked={settings.earlyStoppingEnabled}

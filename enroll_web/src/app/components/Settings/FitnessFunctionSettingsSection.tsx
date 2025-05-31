@@ -27,7 +27,7 @@ const FitnessFunctionSettingsSection: FC<FitnessFunctionSettingsProps> = ({ sett
               message="Ensure all weights sum to 1.0 for optimal performance. Higher weights prioritize that aspect of the solution."
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="settings-group">
               <SliderInput
                 label="Preference Weight"
                 value={settings.preferenceWeight}

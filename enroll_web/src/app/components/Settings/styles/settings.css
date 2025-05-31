@@ -48,12 +48,136 @@
     @apply bg-red-600 hover:bg-red-700 text-white;
 }
 
-.slider {
+.settings-info-card {
+    @apply p-4 rounded-lg border;
+}
+
+.info.settings-info-card {
+    @apply bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800;
+}
+
+.warning.settings-info-card {
+    @apply bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800;
+}
+
+.settings-info-card h4 {
+    @apply text-sm font-medium;
+}
+
+.settings-info-card h4.info {
+    @apply text-blue-900 dark:text-blue-100;
+}
+
+.settings-info-card h4.warning {
+    @apply text-yellow-900 dark:text-yellow-100;
+}
+
+.settings-info-card p {
+    @apply text-sm font-medium;
+}
+
+.settings-info-card p.info {
+    @apply text-blue-700 dark:text-blue-300;
+}
+
+.settings-info-card p.warning {
+    @apply text-yellow-700 dark:text-yellow-300;
+}
+
+.settings-info-card .info-icon {
+    @apply text-blue-600 dark:text-blue-400 flex-shrink-0;
+}
+
+.settings-info-card .warning-icon {
+    @apply text-yellow-600 dark:text-yellow-400 flex-shrink-0;
+}
+
+label.settings-dropdown {
+    @apply block text-sm font-medium;
+}
+
+select.settings-dropdown  {
+    @apply w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+}
+
+label.settings-number-input {
+    @apply block text-sm font-medium;
+}
+
+input.settings-number-input {
+    @apply w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
+}
+
+.settings-slider-label {
+    @apply flex justify-between items-center;
+}
+
+.settings-slider-label label {
+    @apply text-sm font-medium;
+}
+
+.settings-slider-label span {
+    @apply text-sm font-mono;
+}
+
+.settings-slider-input {
+    @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer;
+}
+
+.settings-slider-fill {
   background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--percentage, 0%), #d1d5db var(--percentage, 0%), #d1d5db 100%);
 }
 
 @media (prefers-color-scheme: dark) {
-    .slider {
+    .settings-slider-fill {
         background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--percentage, 0%), #374151 var(--percentage, 0%), #374151 100%);
     }
+}
+
+.settings-toggle-switch {
+    @apply flex justify-between items-center;
+}
+
+.settings-toggle-switch label {
+    @apply text-sm font-medium;
+}
+
+.settings-toggle-switch p {
+    @apply text-xs mt-1;
+}
+
+.settings-toggle-switch button {
+    @apply relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+}
+
+.settings-toggle-switch span {
+    @apply inline-block h-4 w-4 transform rounded-full bg-white transition-transform;
+}
+
+.settings-section {
+    @apply rounded-xl border shadow-sm;
+}
+
+.settings-section > button {
+    @apply w-full px-6 py-4 flex items-center justify-between transition-colors rounded-t-xl;
+}
+
+.settings-section-drawer {
+    @apply px-6 pb-6 pt-4 space-y-4 border-t border-gray-100 dark:border-gray-700;
+}
+
+.settings-group {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4 pt-4;
+}
+
+.settings-root {
+    @apply min-h-screen transition-colors duration-300;
+}
+
+.settings-header {
+    @apply flex items-center gap-3 mb-2;
+}
+
+.settings-action-button {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2;
 }

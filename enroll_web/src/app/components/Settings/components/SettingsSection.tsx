@@ -1,21 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, ReactNode, FC} from 'react';
 import { ChevronDown, ChevronRight} from 'lucide-react'
 
 import '../styles/settings.css';
 
-const SettingsSection: React.FC<{
+interface SettingsSectionProps {
   title: string;
-  icon: React.ReactNode;
-  children: React.ReactNode;
+  icon: ReactNode;
+  children: ReactNode;
   defaultExpanded?: boolean;
-}> = ({ title, icon, children, defaultExpanded = true }) => {
+}
+
+const SettingsSection: FC<SettingsSectionProps> = ({ title, icon, children, defaultExpanded = true }) => {
   const [isExpanded, setIsExpanded] = useState(defaultExpanded);
   
   return (
-    <div className="settings-bg-secondary rounded-xl border settings-border shadow-sm">
+    <div className="settings-section settings-bg-secondary settings-border">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-6 py-4 flex items-center justify-between settings-text-primary hover:settings-bg-tertiary transition-colors rounded-t-xl"
+        className="settings-text-primary hover:settings-bg-tertiary"
       >
         <div className="flex items-center gap-3">
           {icon}
@@ -24,7 +26,7 @@ const SettingsSection: React.FC<{
         {isExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
       </button>
       {isExpanded && (
-        <div className="px-6 pb-6 pt-4 space-y-4 border-t border-gray-100 dark:border-gray-700">
+        <div className="settings-section-drawer">
           {children}
         </div>
       )}

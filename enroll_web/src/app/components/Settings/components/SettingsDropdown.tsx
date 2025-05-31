@@ -1,23 +1,24 @@
-import React from 'react';
+import React, { FC } from 'react';
 
 import '../styles/settings.css';
 
-
-const Dropdown: React.FC<{
+interface DropdownProps {
     label: string;
     options: { value: string; label: string }[];
     value: string;
     onChange: (value: string) => void;
     description?: string;
-}> = ({ label, options, value, onChange, description }) => (
+}
+
+const Dropdown: FC<DropdownProps> = ({ label, options, value, onChange, description }) => (
     <div className="space-y-2">
-        <label className="block text-sm font-medium settings-text-primary">
+        <label className="settings-dropdown settings-text-primary">
             {label}
         </label>
         <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors settings-input"
+            className="settings-dropdown settings-input"
         >
             {options.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -31,4 +32,5 @@ const Dropdown: React.FC<{
     </div>
 );
 
+export type { DropdownProps };
 export default Dropdown;

@@ -19,7 +19,7 @@ const PerformanceSettingsSection: FC<PerformanceSettingsProps> = ({ settings, se
             icon={<BarChart3 className="text-purple-600" size={20} />}
             defaultExpanded={false}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="settings-group">
               <ToggleSwitch
                 label="Parallel Processing"
                 checked={settings.enableParallelProcessing}
