@@ -8,7 +8,7 @@ import { LessonsState } from './interfaces/Lesson';
 import TimetableHeader from './components/TimetableHeader';
 import TimetableGrid from './components/TimetableGrid';
 
-import "@/app/styles/timetable.css";
+import "./styles/timetable.css";
 
 // Main Component
 const Timetable: React.FC = () => {

@@ -5,7 +5,7 @@ import {Lesson} from '../interfaces/Lesson';
 import ActionButton from "./TimetableActionButton";
 import { Edit, Trash2 } from "lucide-react";
 
-import '@/app/styles/timetable.css';
+import '../styles/timetable.css';
 
 interface LessonCardProps {
   lesson: Lesson;

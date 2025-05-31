@@ -1,7 +1,11 @@
-import Timetable from "./Timetable/Timetable";
+import React from "react";
+import { NextPage } from "next";
+import Settings from "./components/Settings/Settings";
 
-export default function Home() {
-  return (
-    <Timetable />
-  );
+const HomePage: NextPage = () => {
+    return (
+        <Settings />
+    );
 }
+
+export default HomePage;

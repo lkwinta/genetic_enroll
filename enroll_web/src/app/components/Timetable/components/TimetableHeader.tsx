@@ -1,7 +1,7 @@
 import React from 'react';
 import { Clock } from 'lucide-react';
 
-import '@/app/styles/timetable.css';
+import '../styles/timetable.css';
 
 const TimetableHeader: React.FC<{
   totalLessons: number;

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import '../styles/timetable.css';
+
 type FormInputType = 'input' | 'textarea';
 
 interface FormInputProps {

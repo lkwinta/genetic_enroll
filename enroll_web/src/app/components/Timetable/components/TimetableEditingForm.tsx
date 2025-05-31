@@ -5,7 +5,7 @@ import ActionButton from './TimetableActionButton';
 import FormInput, { FormInputType } from './TimetableFormInput';
 import { Save, X } from 'lucide-react';
 
-import '@/app/styles/timetable.css';
+import '../styles/timetable.css';
 
 const formFields: {name: LessonFields, placeholder: string, type: FormInputType}[] = [
   { name: 'subject', placeholder: 'Subject *', type: 'input' },

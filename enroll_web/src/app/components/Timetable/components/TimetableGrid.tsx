@@ -5,7 +5,7 @@ import LessonCell from "./TimetableLessonCell";
 
 import { DAYS, TIME_SLOTS } from "./TimetableConsts";
 
-import "@/app/styles/timetable.css";
+import '../styles/timetable.css';
 
 interface TimetableGridProps {
   lessons: LessonsState;

@@ -9,6 +9,8 @@ import LessonCard from './TimetableLessonCard';
 import ActionButton from './TimetableActionButton';
 import { Plus } from 'lucide-react';
 
+import '../styles/timetable.css';
+
 export const getLessonKey = (day: string, timeSlot: string): string => `${day}-${timeSlot}`;
 const generateLessonId = (): string => `lesson_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
