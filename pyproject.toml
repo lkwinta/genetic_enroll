@@ -13,7 +13,7 @@ dependencies = [
     "matplotlib",
     "scipy",
     "seaborn",
-    "ray[default]",
+    "ray[default]==2.44",
     "ipywidgets"
 ]
 
