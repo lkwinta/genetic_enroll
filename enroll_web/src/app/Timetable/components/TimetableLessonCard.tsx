@@ -5,25 +5,31 @@ import {Lesson} from '../interfaces/Lesson';
 import ActionButton from "./TimetableActionButton";
 import { Edit, Trash2 } from "lucide-react";
 
+import '@/app/styles/timetable.css';
+
 interface LessonCardProps {
   lesson: Lesson;
-  colorClass: string;
+  index: number;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-const LessonCard: React.FC<LessonCardProps> = ({ lesson, colorClass, onEdit, onDelete }) => (
-  <div className={`p-2 border rounded text-xs group relative ${colorClass}`}>
+const colorClasses: string[] = [
+  'purple', 'blue', 'green', 'yellow', 'orange', 'red', 'pink', 'teal'
+]
+
+const LessonCard: React.FC<LessonCardProps> = ({ lesson, index, onEdit, onDelete }) => (
+  <div className={`${colorClasses[index % colorClasses.length]} timetable-lesson-card`}>
     <div className="font-semibold">{lesson.subject}</div>
-    {lesson.teacher && <div className="text-gray-600 dark:text-gray-300">👨‍🏫 {lesson.teacher}</div>}
-    {lesson.room && <div className="text-gray-600 dark:text-gray-300">🏠 {lesson.room}</div>}
+    {lesson.teacher && <div className="teacher">👨‍🏫 {lesson.teacher}</div>}
+    {lesson.room && <div className="room">🏠 {lesson.room}</div>}
     {lesson.notes && (
-      <div className="mt-1 truncate text-gray-500 dark:text-gray-400" title={lesson.notes}>
+      <div className="notes" title={lesson.notes}>
         📝 {lesson.notes}
       </div>
     )}
     
-    <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+    <div className="timetable-lesson-card-buttons">
       <ActionButton onClick={onEdit} variant="edit">
         <Edit size={8} />
       </ActionButton>

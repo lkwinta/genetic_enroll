@@ -5,6 +5,7 @@ import LessonCell from "./TimetableLessonCell";
 
 import { DAYS, TIME_SLOTS } from "./TimetableConsts";
 
+import "@/app/styles/timetable.css";
 
 interface TimetableGridProps {
   lessons: LessonsState;
@@ -13,16 +14,16 @@ interface TimetableGridProps {
 
 const TimetableGrid: React.FC<TimetableGridProps> = ({lessons, setLessons}) => {
   return (
-    <div className="rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800">
+    <div className="timetable-grid">
       <div className="grid grid-cols-6 gap-0">
         {/* Header */}
-        <div className="p-4 font-semibold border-b bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600">
+        <div className="timetable-grid-header">
           Time
         </div>
         {DAYS.map((day) => (
           <div
             key={day}
-            className="p-4 font-semibold border-b text-center bg-gray-100 text-gray-700 border-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+            className="timetable-grid-header"
           >
             {day}
           </div>
@@ -31,7 +32,7 @@ const TimetableGrid: React.FC<TimetableGridProps> = ({lessons, setLessons}) => {
         {/* Time slots and lessons */}
         {TIME_SLOTS.map((timeSlot) => (
           <React.Fragment key={timeSlot}>
-            <div className="p-4 font-medium text-sm flex items-start border-r bg-gray-50 text-gray-600 border-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600">
+            <div className="timetable-grid-slots">
               {timeSlot}
             </div>
             {DAYS.map((day) => (

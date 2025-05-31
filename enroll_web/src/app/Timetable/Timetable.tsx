@@ -8,6 +8,7 @@ import { LessonsState } from './interfaces/Lesson';
 import TimetableHeader from './components/TimetableHeader';
 import TimetableGrid from './components/TimetableGrid';
 
+import "@/app/styles/timetable.css";
 
 // Main Component
 const Timetable: React.FC = () => {
@@ -18,7 +19,7 @@ const Timetable: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900 dark">
+    <div className='timetable-root'>
       <div className="p-6 max-w-7xl mx-auto">
         <TimetableHeader totalLessons={getTotalLessons()} />
         

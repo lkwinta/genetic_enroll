@@ -5,6 +5,8 @@ import ActionButton from './TimetableActionButton';
 import FormInput, { FormInputType } from './TimetableFormInput';
 import { Save, X } from 'lucide-react';
 
+import '@/app/styles/timetable.css';
+
 const formFields: {name: LessonFields, placeholder: string, type: FormInputType}[] = [
   { name: 'subject', placeholder: 'Subject *', type: 'input' },
   { name: 'teacher', placeholder: 'Teacher', type: 'input' },
@@ -20,7 +22,7 @@ interface EditingFormProps {
 }
 
 const EditingForm: React.FC<EditingFormProps> = ({ lessonForm, onInputChange, onSave, onCancel }) => (
-  <div className="p-2 border-2 rounded bg-blue-50 border-blue-200 dark:bg-gray-800 dark:border-blue-600">
+  <div className="timetable-editing-form">
     <div className="space-y-2">
       {formFields.map(({name, placeholder, type}) => (
         <FormInput

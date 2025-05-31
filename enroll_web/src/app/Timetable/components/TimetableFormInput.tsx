@@ -10,13 +10,11 @@ interface FormInputProps {
 }
 
 const FormInput: React.FC<FormInputProps> = ( {type, onChange, ...other}) => {
-  const baseClasses = "w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400";
-  
   if (type === 'textarea') {
     return (
       <textarea {...other}
         onChange={(e) => onChange(e.target.value)}
-        className={`${baseClasses} resize-none h-16`}
+        className={"timetable-form-input resize-none h-16"}
       />
     );
   }
@@ -25,7 +23,7 @@ const FormInput: React.FC<FormInputProps> = ( {type, onChange, ...other}) => {
     <input {...other}
       type="text"
       onChange={(e) => onChange(e.target.value)}
-      className={baseClasses}
+      className="timetable-form-input"
     />
   );
 };

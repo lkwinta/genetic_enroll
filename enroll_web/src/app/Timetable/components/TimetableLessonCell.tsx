@@ -9,10 +9,7 @@ import LessonCard from './TimetableLessonCard';
 import ActionButton from './TimetableActionButton';
 import { Plus } from 'lucide-react';
 
-import { COLOR_CLASSES } from './TimetableConsts';
-
 export const getLessonKey = (day: string, timeSlot: string): string => `${day}-${timeSlot}`;
-export const getColorClass = (index: number): string => COLOR_CLASSES[index % COLOR_CLASSES.length];
 const generateLessonId = (): string => `lesson_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
 interface LessonCellProps {
@@ -127,7 +124,7 @@ const LessonCell: React.FC<LessonCellProps> = ({
         <LessonCard
           key={lesson.id}
           lesson={lesson}
-          colorClass={getColorClass(index)}
+          index={index}
           onEdit={() => handleEditLesson(day, timeSlot, lesson.id)}
           onDelete={() => handleDeleteLesson(day, timeSlot, lesson.id)}
         />

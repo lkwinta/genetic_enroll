@@ -1,8 +1,10 @@
 import React from 'react';
 
+type ActionButtonType = 'save' | 'cancel' | 'edit' | 'delete' | 'add';
+
 interface ActionButtonProps {
   onClick: () => void;
-  variant: 'save' | 'cancel' | 'edit' | 'delete' | 'add';
+  variant: ActionButtonType;
   children: React.ReactNode;
   size?: 'sm' | 'xs';
 }
@@ -25,4 +27,5 @@ const ActionButton: React.FC<ActionButtonProps> = ({ onClick, variant, children,
   );
 };
 
+export type { ActionButtonProps, ActionButtonType };
 export default ActionButton;
