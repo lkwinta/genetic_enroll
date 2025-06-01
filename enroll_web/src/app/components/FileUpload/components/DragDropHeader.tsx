@@ -16,7 +16,7 @@ const DragDropHeader: FC<DragDropHeaderProps> = ({ title, viewButtonEnabled = fa
                 {viewButtonEnabled &&
                     <button
                         onClick={viewButtonOnClick}
-                        className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors duration-200 font-medium"
+                        className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 font-medium"
                         type="button"
                     >
                         View
