@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, } from 'react';
+import React, { useState } from 'react';
 
 import {
-    Save,
+    Calculator,
     RotateCcw,
     Settings as SettingsIcon,
 } from 'lucide-react';
@@ -85,45 +85,44 @@ const Settings: React.FC = () => {
     };
 
     return (
-        <div className="settings-bg-primary settings-root">
-            <div className="max-w-4xl mx-auto px-4 py-8">
-                {/* Header */}
-                <div className="mb-8">
-                    <div className="settings-header">
-                        <SettingsIcon className={`settings-text-primary `} size={32} />
-                        <h1 className="text-3xl font-bold settings-text-primary">
-                            Genetic Algorithm Settings
-                        </h1>
-                    </div>
-                    <p className="settings-text-secondary">
-                        Configure parameters for student assignment optimization with preferences
-                    </p>
+        <div className="max-w-4xl mx-auto px-4 py-8">
+            {/* Header */}
+            <div className="mb-8">
+                <div className="settings-header">
+                    <SettingsIcon className={`settings-text-primary `} size={32} />
+                    <h1 className="text-3xl font-bold settings-text-primary">
+                        Genetic Algorithm Settings
+                    </h1>
                 </div>
+                <p className="settings-text-secondary">
+                    Configure parameters for student assignment optimization with preferences
+                </p>
+            </div>
 
-                {/* Action Buttons */}
-                <div className="flex gap-3 mb-8">
-                    <button
-                        onClick={saveSettings}
-                        disabled={isSaving}
-                        className="settings-button-primary settings-action-button disabled:opacity-50"
-                    >
-                        <Save size={16} />
-                        {isSaving ? 'Saving...' : 'Save Settings'}
-                    </button>
-                    <button
-                        onClick={resetSettings}
-                        className="settings-button-secondary settings-action-button"
-                    >
-                        <RotateCcw size={16} />
-                        Reset to Defaults
-                    </button>
-                </div>
+            {/* Action Buttons */}
+            <div className="flex gap-3 mb-8 justify-between">
+                <button
+                    onClick={resetSettings}
+                    className="settings-button-secondary settings-action-button"
+                >
+                    <RotateCcw size={16} />
+                    Reset to Defaults
+                </button>
 
-                <div className="space-y-6">
-                    <AlgorithmSettingsSection settings={algorithmSettings} setSettings={setAlgorithmSettings} />
-                    <FitnessFunctionSettingsSection settings={fitnessFunctionSettings} setSettings={setFitnessFunctionSettings} />
-                    <PerformanceSettingsSection settings={performanceSettings} setSettings={setPerformanceSettings} />
-                </div>
+                <button
+                    onClick={saveSettings}
+                    disabled={isSaving}
+                    className="settings-button-primary settings-action-button disabled:opacity-50"
+                >
+                    <Calculator size={16} />
+                    {isSaving ? 'Running...' : 'Run Algorithm'}
+                </button>
+            </div>
+
+            <div className="space-y-6">
+                <AlgorithmSettingsSection settings={algorithmSettings} setSettings={setAlgorithmSettings} />
+                <FitnessFunctionSettingsSection settings={fitnessFunctionSettings} setSettings={setFitnessFunctionSettings} />
+                <PerformanceSettingsSection settings={performanceSettings} setSettings={setPerformanceSettings} />
             </div>
         </div>
     );

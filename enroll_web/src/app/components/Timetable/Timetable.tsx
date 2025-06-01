@@ -80,14 +80,12 @@ const Timetable: React.FC<TimetableProps> = ({ type, file }) => {
     };
 
     return (
-        <div className='timetable-root'>
-            <div className="p-6 max-w-8xl mx-auto">
-                <TimetableHeader totalLessons={getTotalLessons()} />
-                <TimetableGrid
-                    lessons={lessons}
-                    setLessons={setLessons}
-                />
-            </div>
+        <div className="p-6 max-w-8xl mx-auto">
+            <TimetableHeader totalLessons={getTotalLessons()} />
+            <TimetableGrid
+                lessons={lessons}
+                setLessons={setLessons}
+            />
         </div>
     );
 };

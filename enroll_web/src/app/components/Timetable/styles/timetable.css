@@ -1,9 +1,5 @@
 @reference "../../../globals.css";
 
-.timetable-root {
-    @apply min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900;
-}
-
 .timetable-header {
     @apply flex items-center justify-between mb-6;
 }

@@ -170,10 +170,6 @@ input.settings-number-input {
     @apply grid grid-cols-1 md:grid-cols-2 gap-4 pt-4;
 }
 
-.settings-root {
-    @apply min-h-screen transition-colors duration-300;
-}
-
 .settings-header {
     @apply flex items-center gap-3 mb-2;
 }

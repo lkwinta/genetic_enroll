@@ -28,9 +28,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <StateComponent>
-          {children}
-        </StateComponent>
+        <div className="content-center min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900 p-6">
+          <StateComponent>
+            {children}
+          </StateComponent>
+        </div>
+
       </body>
     </html>
   );
