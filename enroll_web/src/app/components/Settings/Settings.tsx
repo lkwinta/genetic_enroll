@@ -53,8 +53,28 @@ const Settings: React.FC = () => {
 
     const saveSettings = async () => {
         setIsSaving(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        const settings = {
+            algorithmSettings,
+            fitnessFunctionSettings,
+            performanceSettings
+        };
+
+        const response = await fetch("http://127.0.0.1:5000/settings", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(settings),
+        });
+
+        if (response.ok) {
+            console.log("Settings saved successfully");
+            alert("Settings saved successfully!");
+        } else {
+            console.error("Failed to save settings");
+            alert("Failed to save settings. Please try again.");
+        }
+
         setIsSaving(false);
     };
 
