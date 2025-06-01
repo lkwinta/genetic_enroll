@@ -17,27 +17,19 @@
 }
 
 .timetable-grid {
-    @apply rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800;
+    @apply rounded-lg shadow-lg min-w-2xl overflow-hidden bg-white dark:bg-gray-800;
 }
 
 .timetable-grid-header {
-    @apply p-4 font-semibold border-b bg-gray-100 text-gray-700  dark:text-gray-200 border-gray-200 dark:bg-gray-700  dark:border-gray-600;
+    @apply p-4 font-semibold text-center border-b bg-gray-100 text-gray-700  dark:text-gray-200 border-gray-200 dark:bg-gray-700  dark:border-gray-600;
 }
 
 .timetable-grid-slots  {
-    @apply p-4 font-medium text-sm flex items-start border-r bg-gray-50 text-gray-600 dark:text-gray-300 border-gray-200 dark:bg-gray-700  dark:border-gray-600;
-}
-
-.timetable-editing-form {
-    @apply p-2 border-2 rounded bg-blue-50 border-blue-200 dark:bg-gray-800 dark:border-blue-600;
-}
-
-.timetable-form-input {
-    @apply w-full px-2 py-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400
+    @apply p-4 font-medium text-sm flex items-start border-r bg-gray-50 text-gray-600 dark:text-gray-300 border-gray-200 dark:bg-gray-700 dark:border-gray-600;
 }
 
 .timetable-lesson-card {
-  @apply p-2 border rounded text-xs relative;
+  @apply  text-start p-2 border rounded text-xs relative min-w-20;
 }
 
 .blue.timetable-lesson-card{
@@ -62,10 +54,6 @@
 
 .teal.timetable-lesson-card{
     @apply bg-teal-50 border-teal-200 text-teal-800 dark:bg-teal-900 dark:border-teal-700 dark:text-teal-100
-}
-
-.timetable-lesson-card-buttons .timetable-lesson-card {
-    @apply absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1;
 }
 
 .teacher .timetable-lesson-card {

@@ -1,9 +1,6 @@
 import React from 'react';
 
-import {Lesson} from '../interfaces/Lesson';
-
-import ActionButton from "./TimetableActionButton";
-import { Edit, Trash2 } from "lucide-react";
+import {Lesson} from '../interfaces/Lesson'
 
 import '../styles/timetable.css';
 
@@ -19,7 +16,7 @@ const colorClasses: string[] = [
 ]
 
 const LessonCard: React.FC<LessonCardProps> = ({ lesson, index, onEdit, onDelete }) => (
-  <div className={`${colorClasses[index % colorClasses.length]} timetable-lesson-card`}>
+  <button disabled={true} className={`${colorClasses[index % colorClasses.length]} timetable-lesson-card`}>
     <div className="font-semibold">{lesson.subject}</div>
     {lesson.teacher && <div className="teacher">👨‍🏫 {lesson.teacher}</div>}
     {lesson.room && <div className="room">🏠 {lesson.room}</div>}
@@ -28,16 +25,7 @@ const LessonCard: React.FC<LessonCardProps> = ({ lesson, index, onEdit, onDelete
         📝 {lesson.notes}
       </div>
     )}
-    
-    <div className="timetable-lesson-card-buttons">
-      <ActionButton onClick={onEdit} variant="edit">
-        <Edit size={8} />
-      </ActionButton>
-      <ActionButton onClick={onDelete} variant="delete">
-        <Trash2 size={8} />
-      </ActionButton>
-    </div>
-  </div>
+  </button>
 );
 
 export type { LessonCardProps };

@@ -1,10 +1,10 @@
 import React from "react";
 import { NextPage } from "next";
-import Settings from "./components/Settings/Settings";
+import CSVFileUpload from "./components/FileUpload/FileUpload";
 
 const HomePage: NextPage = () => {
     return (
-        <Settings />
+        <CSVFileUpload />
     );
 }
 

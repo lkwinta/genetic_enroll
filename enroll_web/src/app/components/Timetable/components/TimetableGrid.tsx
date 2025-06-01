@@ -1,4 +1,4 @@
-import React from "react";
+import React, {Fragment, Dispatch, SetStateAction, FC} from "react";
 
 import { LessonsState } from "../interfaces/Lesson";
 import LessonCell from "./TimetableLessonCell";
@@ -9,15 +9,14 @@ import '../styles/timetable.css';
 
 interface TimetableGridProps {
   lessons: LessonsState;
-  setLessons: React.Dispatch<React.SetStateAction<LessonsState>>;
+  setLessons: Dispatch<SetStateAction<LessonsState>>;
 }
 
-const TimetableGrid: React.FC<TimetableGridProps> = ({lessons, setLessons}) => {
+const TimetableGrid: FC<TimetableGridProps> = ({lessons, setLessons}) => {
   return (
     <div className="timetable-grid">
       <div
-        className="grid gap-0"
-        style={{ gridTemplateColumns: `minmax(120px, auto) repeat(${DAYS.length}, minmax(400px, 1fr))` }}
+        className="grid gap-0 grid-cols-[minmax(1rem,_auto)_repeat(5,_1fr)]"
       >
         {/* Header */}
         <div className="timetable-grid-header">
@@ -34,7 +33,7 @@ const TimetableGrid: React.FC<TimetableGridProps> = ({lessons, setLessons}) => {
 
         {/* Time slots and lessons */}
         {TIME_SLOTS.map((timeSlot) => (
-          <React.Fragment key={timeSlot}>
+          <Fragment key={timeSlot}>
             <div className="timetable-grid-slots">
               {timeSlot}
             </div>
@@ -51,7 +50,7 @@ const TimetableGrid: React.FC<TimetableGridProps> = ({lessons, setLessons}) => {
                 />
               </div>
             ))}
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
     </div>

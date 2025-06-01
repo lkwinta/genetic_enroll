@@ -29,6 +29,10 @@ input {
   cursor: text !important; /* This would override range input cursors */
 }
 
+button:disabled, select:disabled {
+  cursor: auto !important; /* This would override button cursors */
+}
+
 button, select {
   cursor: pointer !important; /* This would override button cursors */
 }

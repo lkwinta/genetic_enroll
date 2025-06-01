@@ -3,11 +3,7 @@ import React, { useState } from 'react';
 import { Lesson, LessonsState } from '../interfaces/Lesson';
 import EditingCell from '../interfaces/EditingCell';
 
-import EditingForm from './TimetableEditingForm';
 import LessonCard from './TimetableLessonCard';
-
-import ActionButton from './TimetableActionButton';
-import { Plus } from 'lucide-react';
 
 import '../styles/timetable.css';
 
@@ -56,41 +52,6 @@ const LessonCell: React.FC<LessonCellProps> = ({
     }
   };
 
-  const handleAddLesson = (day: string, timeSlot: string): void => {
-    setEditingCell({ day, timeSlot });
-    setLessonForm({ subject: '', teacher: '', room: '', notes: '' });
-  };
-
-  const handleSaveLesson = (): void => {
-    if (!lessonForm.subject.trim() || !editingCell) return;
-
-    const lessonKey = getLessonKey(editingCell.day, editingCell.timeSlot);
-
-    if (editingCell.lessonId) {
-      setLessons(prev => ({
-        ...prev,
-        [lessonKey]: (prev[lessonKey] || []).map(lesson =>
-          lesson.id === editingCell.lessonId
-            ? { ...lesson, ...lessonForm }
-            : lesson
-        )
-      }));
-    } else {
-      const newLesson: Lesson = {
-        id: generateLessonId(),
-        ...lessonForm
-      };
-
-      setLessons(prev => ({
-        ...prev,
-        [lessonKey]: [...(prev[lessonKey] || []), newLesson]
-      }));
-    }
-
-    setEditingCell(null);
-    setLessonForm({ subject: '', teacher: '', room: '', notes: '' });
-  };
-
   const handleDeleteLesson = (day: string, timeSlot: string, lessonId: string): void => {
     const lessonKey = getLessonKey(day, timeSlot);
     setLessons(prev => ({
@@ -99,46 +60,18 @@ const LessonCell: React.FC<LessonCellProps> = ({
     }));
   };
 
-  const handleCancelEdit = (): void => {
-    setEditingCell(null);
-    setLessonForm({ subject: '', teacher: '', room: '', notes: '' });
-  };
-
-  const handleInputChange = (field: keyof Omit<Lesson, 'id'>, value: string): void => {
-    setLessonForm(prev => ({ ...prev, [field]: value }));
-  };
-
-
-  if (isEditing) {
-    return (
-      <EditingForm 
-        lessonForm={lessonForm}
-        onInputChange={handleInputChange}
-        onSave={handleSaveLesson}
-        onCancel={handleCancelEdit}
-      />
-    );
-  }
-
   return (
     <div className="p-1 min-h-32 space-y-1">
-      <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${lessonList.length}, minmax(0, 1fr))` }}>
-      {lessonList.map((lesson, index) => (
-        <LessonCard
-          key={lesson.id}
-          lesson={lesson}
-          index={index}
-          onEdit={() => handleEditLesson(day, timeSlot, lesson.id)}
-          onDelete={() => handleDeleteLesson(day, timeSlot, lesson.id)}
-        />
-      ))}
-    </div>
-
-      <div className="flex items-center justify-center min-h-8">
-        <ActionButton onClick={() => handleAddLesson(day, timeSlot)} variant="add">
-          <Plus size={12} />
-          Add Class
-        </ActionButton>
+      <div className="grid gap-1 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
+        {lessonList.map((lesson, index) => (
+          <LessonCard
+            key={lesson.id}
+            lesson={lesson}
+            index={index}
+            onEdit={() => handleEditLesson(day, timeSlot, lesson.id)}
+            onDelete={() => handleDeleteLesson(day, timeSlot, lesson.id)}
+          />
+        ))}
       </div>
     </div>
   );
