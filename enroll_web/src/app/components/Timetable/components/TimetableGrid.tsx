@@ -15,7 +15,10 @@ interface TimetableGridProps {
 const TimetableGrid: React.FC<TimetableGridProps> = ({lessons, setLessons}) => {
   return (
     <div className="timetable-grid">
-      <div className="grid grid-cols-6 gap-0">
+      <div
+        className="grid gap-0"
+        style={{ gridTemplateColumns: `minmax(120px, auto) repeat(${DAYS.length}, minmax(400px, 1fr))` }}
+      >
         {/* Header */}
         <div className="timetable-grid-header">
           Time

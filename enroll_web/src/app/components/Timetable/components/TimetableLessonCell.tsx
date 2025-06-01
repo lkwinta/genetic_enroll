@@ -122,6 +122,7 @@ const LessonCell: React.FC<LessonCellProps> = ({
 
   return (
     <div className="p-1 min-h-32 space-y-1">
+      <div className="grid gap-1" style={{ gridTemplateColumns: `repeat(${lessonList.length}, minmax(0, 1fr))` }}>
       {lessonList.map((lesson, index) => (
         <LessonCard
           key={lesson.id}
@@ -131,6 +132,7 @@ const LessonCell: React.FC<LessonCellProps> = ({
           onDelete={() => handleDeleteLesson(day, timeSlot, lesson.id)}
         />
       ))}
+    </div>
 
       <div className="flex items-center justify-center min-h-8">
         <ActionButton onClick={() => handleAddLesson(day, timeSlot)} variant="add">

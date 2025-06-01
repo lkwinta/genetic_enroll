@@ -37,7 +37,7 @@
 }
 
 .timetable-lesson-card {
-    @apply p-2 border rounded text-xs relative
+  @apply p-2 border rounded text-xs relative;
 }
 
 .blue.timetable-lesson-card{
