@@ -41,8 +41,8 @@ class Service:
         self.history = None
         self.score_per_student = None
 
-    def load_schedule(self, schedule_csv):
-        self.plan = pd.read_csv(schedule_csv, sep=None, engine='python')
+    def load_schedule(self, schedule_df):
+        self.plan = schedule_df.copy()
 
         self.plan["start_time"] = pd.to_datetime(self.plan["start_time"], format="%H:%M").dt.time
 
@@ -74,8 +74,9 @@ class Service:
                 (start + DUR).time(),
             )
 
-    def load_preferences(self, preferences_csv_path):
-        self.pref = pd.read_csv(preferences_csv_path)
+    def load_preferences(self, preferences_df):
+        self.pref = preferences_df.copy()
+
         self.students = self.pref["student_id"].unique()
         self.pref_dict = {
             (row.student_id, row.subject, row.group_id): row.preference

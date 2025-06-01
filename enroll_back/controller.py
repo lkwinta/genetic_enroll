@@ -5,6 +5,8 @@ from flask import request, jsonify, Flask, send_file
 from flask_cors import CORS
 from service import Service
 
+import pandas as pd
+
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
 
@@ -72,8 +74,10 @@ def upload_schedule():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
+    df = pd.read_csv(file, sep=";")
+
     try:
-        ray.get(service.load_schedule.remote(file.filename))
+        ray.get(service.load_schedule.remote(df))
         return jsonify({"message": "Schedule loaded successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -88,8 +92,10 @@ def upload_preferences():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
+    df = pd.read_csv(file, sep=";")
+
     try:
-        ray.get(service.load_preferences.remote(file.filename))
+        ray.get(service.load_preferences.remote(df))
         return jsonify({"message": "Preferences loaded successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

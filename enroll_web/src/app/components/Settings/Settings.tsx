@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import {
     Calculator,
@@ -14,6 +14,7 @@ import PerformanceSettingsSection from './PerformanceSettingsSection';
 
 import './styles/settings.css';
 import { AlgorithmSettingsState, FitnessFunctionSettingsState, PerformanceSettingsState } from './interfaces/AlgorithmSettings';
+import { FilesContext } from '@/app/global_state';
 
 const Settings: React.FC = () => {
     const defaultAlgorithmSettings: AlgorithmSettingsState = {
@@ -46,13 +47,20 @@ const Settings: React.FC = () => {
         threadCount: 4,
     };
 
-    const [isSaving, setIsSaving] = useState(false);
+    const [isRunning, setIsRunning] = useState(false);
     const [algorithmSettings, setAlgorithmSettings] = useState<AlgorithmSettingsState>(defaultAlgorithmSettings);
     const [fitnessFunctionSettings, setFitnessFunctionSettings] = useState<FitnessFunctionSettingsState>(defaultFitnessFunctionSettings);
     const [performanceSettings, setPerformanceSettings] = useState<PerformanceSettingsState>(defaultPerformanceSettings);
+    const {scheduleFile, preferencesFile} = useContext(FilesContext);
+    
+    const runAlgorithm = async () => {
+        if (!scheduleFile || !preferencesFile) {
+            console.error("Schedule file or preferences file is not set");
+            return;
+        }
 
-    const saveSettings = async () => {
-        setIsSaving(true);
+
+        setIsRunning(true);
         const settings = {
             algorithmSettings,
             fitnessFunctionSettings,
@@ -68,14 +76,20 @@ const Settings: React.FC = () => {
         });
 
         if (response.ok) {
-            console.log("Settings saved successfully");
-            alert("Settings saved successfully!");
+            const data = new FormData();
+            data.append("file", scheduleFile.file);
+
+            const res = await fetch("http://127.0.0.1:5000/upload/schedule", {
+                method: "POST",
+                body: data
+            });
+
+            console.log(res);
         } else {
             console.error("Failed to save settings");
-            alert("Failed to save settings. Please try again.");
         }
 
-        setIsSaving(false);
+        setIsRunning(false);
     };
 
     const resetSettings = () => {
@@ -110,12 +124,12 @@ const Settings: React.FC = () => {
                 </button>
 
                 <button
-                    onClick={saveSettings}
-                    disabled={isSaving}
+                    onClick={runAlgorithm}
+                    disabled={isRunning}
                     className="settings-button-primary settings-action-button disabled:opacity-50"
                 >
                     <Calculator size={16} />
-                    {isSaving ? 'Running...' : 'Run Algorithm'}
+                    {isRunning ? 'Running...' : 'Run Algorithm'}
                 </button>
             </div>
 
