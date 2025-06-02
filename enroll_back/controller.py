@@ -100,14 +100,11 @@ def upload_preferences():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/elapse', methods=['GET'])
-def elapse():
-    #mock
-    ray.get(service.load_schedule.remote("../data/schedules/schedule_1.csv"))
-    ray.get(service.load_preferences.remote("../data/preferences/preferences_1.csv"))
 
+@app.route('/evolve', methods=['GET'])
+def elapse():
     try:
-        best_individual, best_fitness, history = ray.get(service.evolve.remote(**algorithm_settings,))
+        best_individual, best_fitness = ray.get(service.evolve.remote(**algorithm_settings,))
 
         csv_buffer = io.StringIO()
         best_individual.to_csv(csv_buffer, sep=";")
@@ -121,6 +118,16 @@ def elapse():
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/history', methods=['GET'])
+def history():
+    try:
+        history_data = ray.get(service.get_history.remote())
+        return jsonify(history_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 
 @app.route('/score', methods=['GET'])
 def score_per_student():

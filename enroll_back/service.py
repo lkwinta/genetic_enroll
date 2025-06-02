@@ -305,13 +305,6 @@ class Service:
         population = []
         shuffled = self.students.copy()  # Ray put?
 
-        plan_ref = ray.put(self.plan)
-        cap_dict_ref = ray.put(self.cap_dict)
-        pref_dict_sorted_ref = ray.put(self.pref_dict_sorted)
-        subjects_ref = ray.put(self.subjects)
-        schedule_dict_ref = ray.put(self.schedule_dict)
-        num_groups_ref = ray.put(self.num_groups)
-
         for _ in range(size):
             random.shuffle(shuffled)
             population.append(self.generate_individual())
@@ -340,12 +333,7 @@ class Service:
         population = self.generate_population(population_size)
         best_individual = None
         best_fitness = -1e9
-        history = []
-
-        pref_ref = ray.put(self.pref)
-        pref_dict_ref = ray.put(self.pref_dict)
-        students_ref = ray.put(self.students)
-        schedule_dict_ref = ray.put(self.schedule_dict)
+        self.history = []
 
         print("Starting evolution...")
         for gen in range(max_generations):
@@ -356,7 +344,7 @@ class Service:
             ]
 
             max_f = max(scores)
-            history.append(max_f)
+            self.history.append(max_f)
 
             if max_f > best_fitness:
                 best_fitness = max_f
@@ -389,9 +377,14 @@ class Service:
 
         self.best_individual = best_individual
         self.best_fitness = best_fitness
-        self.history = history
 
-        return best_individual, best_fitness, history
+        return best_individual, best_fitness
+    
+    def get_history(self):
+        """
+        Zwraca historię ewolucji (najlepszy fitness w każdym pokoleniu).
+        """
+        return self.history
 
     def score_per_student(self):
         scores = []
