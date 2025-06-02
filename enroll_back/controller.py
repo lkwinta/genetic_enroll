@@ -114,8 +114,6 @@ def elapse():
         return send_file(
             io.BytesIO(csv_buffer.getvalue().encode()),
             mimetype='text/csv',
-            as_attachment=True,
-            download_name='schedule.csv'
         )
     except Exception as e:
         return jsonify({"error": str(e)}), 500

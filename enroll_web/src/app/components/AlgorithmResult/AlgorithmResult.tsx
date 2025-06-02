@@ -1,11 +1,67 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import { FilesContext } from '@/app/global_state';
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import { FileObject } from '@/app/components/FileUpload/interfaces/File';
+import { parseIndividualIntoStudentsMap, parseScheduleIntoLessons } from '@/app/utils/TimetableParser';
+import Timetable from '../Timetable/Timetable';
+import Papa from 'papaparse';
+
+
+
+const parseFile = (setFile: Dispatch<SetStateAction<FileObject | undefined>>, file?: FileObject) => {
+    if (!file) return;
+    if (file.status !== 'ready') return;
+
+    file.file.text().then((content) => {
+        const parseResult = Papa.parse(content, {
+            header: true,
+            skipEmptyLines: true,
+            dynamicTyping: true,
+            delimitersToGuess: [',', '\t', '|', ';'],
+        });
+
+        if (parseResult.errors.length === 0) {
+            setFile((prev) => ({
+                ...prev!,
+                status: 'success',
+                data: parseResult.data,
+                rowCount: parseResult.data.length,
+            }));
+        } else {
+            setFile((prev) => ({
+                ...prev!,
+                status: 'error',
+                error: 'CSV parsing failed',
+            }));
+        }
+    });
+}
 
 const AlgorithmResult: React.FC = () => {
-    const [results, setResults] = useState<string[][] | null>(null);
+    const [results, setResults] = useState<boolean>(false);
     const [scores, setScores] = useState<number[] | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const { individualFile, setIndividualFile, scheduleFile } = useContext(FilesContext);
+
+    useEffect(() => {
+        parseFile(setIndividualFile, individualFile);
+        setResults(true);
+        studentOnLessons = parseIndividualIntoStudentsMap(individualFile);
+    }, [individualFile]);
+
+
+
+    const formatFileSize = (bytes: number): string => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    };
+
+    const { lessons, subjectColorMap } = parseScheduleIntoLessons(scheduleFile);
+    let studentOnLessons: Record<string, string[]> = {}
 
     useEffect(() => {
         const fetchResults = async () => {
@@ -18,9 +74,18 @@ const AlgorithmResult: React.FC = () => {
                     throw new Error("Failed to fetch results");
                 }
 
-                const text = await response.text();
-                const rows = text.split("\n").map(row => row.split(";"));
-                setResults(rows);
+                const blob = await response.blob();
+                const newFile = new File([blob], "aaaaaaaaaaa.csv", { type: "text/csv" });
+                
+                const fileObj: FileObject = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    file: newFile,
+                    name: newFile.name,
+                    size: formatFileSize(newFile.size),
+                    status: 'ready'
+                };
+
+                setIndividualFile(fileObj);
             } catch (err: any) {
                 setError(err.message);
             }
@@ -52,28 +117,19 @@ const AlgorithmResult: React.FC = () => {
             <h1 className="text-3xl font-bold mb-6">Algorithm Results</h1>
             {error && <p className="text-red-500">{error}</p>}
             {results ? (
-                <table className="table-auto w-full border-collapse border border-gray-300 mb-8">
-                    <thead>
-                    <tr>
-                        {results[0].map((header, index) => (
-                            <th key={index} className="border border-gray-300 px-4 py-2">
-                                {header}
-                            </th>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {results.slice(1).map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {row.map((cell, cellIndex) => (
-                                <td key={cellIndex} className="border border-gray-300 px-4 py-2">
-                                    {cell}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                <Timetable
+                    lessons={lessons}
+                    header="Individual Inspect"
+                    coloringFunction={(lesson) => subjectColorMap[lesson.subject] || 'teal'}
+                    clickable={true}
+                    onClick={(lesson) => {
+                        const id = `${lesson.subject}-${lesson.group_id}`;
+                        const students = studentOnLessons[id];
+
+                        console.log(students);
+                    }
+                    }
+                />
             ) : (
                 <p>Loading results...</p>
             )}
@@ -82,18 +138,18 @@ const AlgorithmResult: React.FC = () => {
                     <h2 className="text-2xl font-bold mb-4">Scores Per Student</h2>
                     <table className="table-auto w-full border-collapse border border-gray-300">
                         <thead>
-                        <tr>
-                            <th className="border border-gray-300 px-4 py-2">Student</th>
-                            <th className="border border-gray-300 px-4 py-2">Score</th>
-                        </tr>
+                            <tr>
+                                <th className="border border-gray-300 px-4 py-2">Student</th>
+                                <th className="border border-gray-300 px-4 py-2">Score</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {scores.map((score, index) => (
-                            <tr key={index}>
-                                <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                                <td className="border border-gray-300 px-4 py-2">{score}</td>
-                            </tr>
-                        ))}
+                            {scores.map((score, index) => (
+                                <tr key={index}>
+                                    <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
+                                    <td className="border border-gray-300 px-4 py-2">{score}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </div>
