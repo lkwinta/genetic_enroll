@@ -92,12 +92,13 @@ def upload_preferences():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
-    df = pd.read_csv(file, sep=";")
+    df = pd.read_csv(file, sep=",")
 
     try:
         ray.get(service.load_preferences.remote(df))
         return jsonify({"message": "Preferences loaded successfully"}), 200
     except Exception as e:
+        print(f"Error loading preferences: {e}")
         return jsonify({"error": str(e)}), 500
 
 

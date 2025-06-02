@@ -54,7 +54,7 @@ const Settings: React.FC = () => {
     const [fitnessFunctionSettings, setFitnessFunctionSettings] = useState<FitnessFunctionSettingsState>(defaultFitnessFunctionSettings);
     const [performanceSettings, setPerformanceSettings] = useState<PerformanceSettingsState>(defaultPerformanceSettings);
     const {scheduleFile, preferencesFile} = useContext(FilesContext);
-    
+
     const runAlgorithm = async () => {
         if (!scheduleFile || !preferencesFile) {
             console.error("Schedule file or preferences file is not set");

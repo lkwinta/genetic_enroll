@@ -19,13 +19,21 @@ const TimetablePage: NextPage = () => {
     }
 
     const { lessons, subjectColorMap } = parseScheduleIntoLessons(scheduleFile);
-    const { } = parseIndividualIntoStudentsMap(individualFile);
-
+    const studentOnLessons = parseIndividualIntoStudentsMap(individualFile);
+    console.log(studentOnLessons);
     return (
         <Timetable
             lessons={lessons}
             header="Individual Inspect"
             coloringFunction={(lesson) => subjectColorMap[lesson.subject] || 'teal'}
+            clickable={true}
+            onClick={(lesson) => {
+                const id = `${lesson.subject}-${lesson.group_id}`;
+                const students = studentOnLessons[id];
+
+                console.log(students);
+            }
+            }
         />
     );
 }

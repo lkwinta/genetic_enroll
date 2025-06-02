@@ -88,12 +88,18 @@ const parseIndividualIntoStudentsMap = (individualFile?: FileObject)  => {
 
     individualFile!.data!.forEach((row) => {
         const student = row[""];
-        console.log(row)
+        const entries = Object.entries(row);
+
+        for (let i = 1; i < entries.length; i++) {
+            const [subject, group] = entries[i];
+            const id = `${subject}-${group}`;
+
+            studentsOnLessons[id] = [...(studentsOnLessons[id] || []), student];
+        }
     });
    
     
-    return {
-    }
+    return studentsOnLessons
 }
 
 
