@@ -21,7 +21,7 @@ const AlgorithmResult: React.FC = () => {
                 const text = await response.text();
                 const rows = text.split("\n").map(row => row.split(";"));
                 setResults(rows);
-            } catch (err) {
+            } catch (err: any) {
                 setError(err.message);
             }
         };
@@ -38,7 +38,7 @@ const AlgorithmResult: React.FC = () => {
 
                 const scoresData = await response.json();
                 setScores(scoresData);
-            } catch (err) {
+            } catch (err: any) {
                 setError(err.message);
             }
         };

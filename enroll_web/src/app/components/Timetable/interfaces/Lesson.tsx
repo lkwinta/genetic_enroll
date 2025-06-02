@@ -1,13 +1,21 @@
 export type LessonFields = "subject" | "teacher" | "room" | "notes";
 
+export type Day = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
+
 export interface Lesson {
-  id: string;
   subject: string;
   teacher: string;
   room: string;
   notes: string;
+  day: Day;
+  timeSlot: string;
+  
+  group_id?: number;
+  capacity?: number;
+  pointsPerCapacity?: number;
+  pointsAssigned?: number;
 }
 
-export interface LessonsState {
+export interface LessonsList {
   [key: string]: Lesson[];
 }

@@ -1,18 +1,21 @@
 import React, {Fragment, Dispatch, SetStateAction, FC} from "react";
 
-import { LessonsState } from "../interfaces/Lesson";
+import { Lesson, LessonsList } from "../interfaces/Lesson";
 import LessonCell from "./TimetableLessonCell";
 
 import { DAYS, TIME_SLOTS } from "./TimetableConsts";
 
 import '../styles/timetable.css';
+import { ColorClass } from "./TimetableLessonCard";
 
 interface TimetableGridProps {
-  lessons: LessonsState;
-  setLessons: Dispatch<SetStateAction<LessonsState>>;
+  lessons: LessonsList;
+  coloringFunction?: (lesson: Lesson) => ColorClass;
+  lessonsClickable?: boolean;
+  onLessonClick?: (lesson: Lesson) => void;
 }
 
-const TimetableGrid: FC<TimetableGridProps> = ({lessons, setLessons}) => {
+const TimetableGrid: FC<TimetableGridProps> = ({lessons, lessonsClickable, coloringFunction, onLessonClick}) => {
   return (
     <div className="timetable-grid">
       <div
@@ -46,7 +49,9 @@ const TimetableGrid: FC<TimetableGridProps> = ({lessons, setLessons}) => {
                   day={day}
                   timeSlot={timeSlot}
                   lessons={lessons}
-                  setLessons={setLessons}
+                  coloringFunction={coloringFunction}
+                  cardClickable={lessonsClickable}
+                  onCardClick={onLessonClick}
                 />
               </div>
             ))}

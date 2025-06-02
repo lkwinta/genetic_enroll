@@ -9,13 +9,18 @@ export interface IFilesContext {
 
     preferencesFile?: FileObject;
     setPreferencesFile: Dispatch<SetStateAction<FileObject | undefined>>;
+
+    individualFile?: FileObject;
+    setIndividualFile: Dispatch<SetStateAction<FileObject | undefined>>;
 }
 
 export const FilesContext = createContext<IFilesContext>({
     scheduleFile: undefined,
     setScheduleFile: () => {},
     preferencesFile: undefined,
-    setPreferencesFile: () => {}
+    setPreferencesFile: () => {},
+    individualFile: undefined,
+    setIndividualFile: () => {}
 });
 
 interface StateComponentProps {
@@ -25,13 +30,16 @@ interface StateComponentProps {
 const StateComponent: FC<StateComponentProps> = ({ children }) => {
     const [scheduleFile, setScheduleFile] = useState<FileObject | undefined>(undefined);
     const [preferencesFile, setPreferencesFile] = useState<FileObject | undefined>(undefined);
+    const [individualFile, setIndividualFile] = useState<FileObject | undefined>(undefined);
 
     return (
         <FilesContext.Provider value={{
             scheduleFile,
             setScheduleFile,
             preferencesFile,
-            setPreferencesFile
+            setPreferencesFile,
+            individualFile,
+            setIndividualFile
         }}>
             {children}
         </FilesContext.Provider>

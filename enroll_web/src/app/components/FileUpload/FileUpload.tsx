@@ -47,12 +47,15 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
         scheduleFile,
         setScheduleFile,
         preferencesFile,
-        setPreferencesFile
+        setPreferencesFile,
+        individualFile,
+        setIndividualFile,
     } = useContext(FilesContext);
     const router = useRouter();
 
     useEffect(() => parseFile(setScheduleFile, scheduleFile), [scheduleFile]);
     useEffect(() => parseFile(setPreferencesFile, preferencesFile), [preferencesFile]);
+    useEffect(() => parseFile(setIndividualFile, individualFile), [individualFile]);
 
     useEffect(() => {
         if (setReady) {
@@ -87,7 +90,7 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
                     viewButtonEnabled={true}
                     viewButtonOnClick={() => {
                         if (scheduleFile) {
-                            router.push(`/pages/timetable`);
+                            router.push(`/pages/schedule`);
                         }
                     }}
                 />
@@ -96,6 +99,25 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
                     description="Upload preferences CSV file"
                     file={preferencesFile}
                     onFileChange={setPreferencesFile}
+                    viewButtonEnabled={true}
+                    viewButtonOnClick={() => {
+                        if (preferencesFile) {
+                            router.push(`/pages/preferences`);
+                        }
+                    }}
+                />
+                {/* Just for debug TODO: Remove */}
+                <DragDrop
+                    title="Individual Debug Upload TODO: Remove"
+                    description="Individual object CSV file TODO: Remove"
+                    file={individualFile}
+                    onFileChange={setIndividualFile}
+                    viewButtonEnabled={true}
+                    viewButtonOnClick={() => {
+                        if (individualFile) {
+                            router.push(`/pages/individual`);
+                        }
+                    }}
                 />
             </div>
         </div>
