@@ -311,6 +311,33 @@ class Service:
 
         return population
 
+    def selection_tournament(self, population, scores, tournament_size, elitism_rate):
+        """
+        Wybiera osobników do krzyżowania na podstawie turniejowej selekcji.
+        """
+        selected = []
+        population_scores = list(enumerate(zip(population, scores)))
+
+        for _ in range(int(len(population) * elitism_rate)):
+            tournament = random.sample(population_scores, tournament_size)
+            tournament.sort(key=lambda x: x[1][1], reverse=True)
+            index, winner = tournament[0]
+            selected.append(winner[0])
+
+            population_scores.pop(index)
+
+        return selected
+    
+
+    def selection_truncation(self, population, scores, elitism_rate):
+        """
+        Wybiera osobników do krzyżowania na podstawie selekcji truncacyjnej.
+        """
+        sorted_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
+        elite_size = int(len(sorted_indices) * elitism_rate)
+        selected_indices = sorted_indices[:elite_size]
+        return [population[i] for i in selected_indices]
+
     def evolve(
             self,
             *,
@@ -334,12 +361,12 @@ class Service:
         best_individual = None
         best_fitness = -1e9
         self.history = []
+        stagnation_count = 0
 
         print("Starting evolution...")
         for gen in range(max_generations):
             scores = [
                 self.fitness(individual)
-                # fitness(pref_ref, individual, pref_dict_ref, preference_weight, capacity_weight, diversity_weight, penalty_weight)
                 for individual in population
             ]
 
@@ -350,12 +377,12 @@ class Service:
                 best_fitness = max_f
                 best_individual = population[scores.index(max_f)]
 
-            sorted_indices = sorted(
-                range(len(scores)), key=lambda i: scores[i], reverse=True
+            elite_population = self.selection_truncation(
+                population, scores, elitism_rate
+            ) if selection_type == "truncation" else self.selection_tournament(
+                population, scores, tournament_size, elitism_rate
             )
 
-            elite_size = int(len(sorted_indices) * elitism_rate)
-            elite_population = [population[i] for i in sorted_indices[:elite_size]]
             new_population = []
 
             while len(new_population) + len(elite_population) < population_size:
@@ -371,6 +398,16 @@ class Service:
 
             population = new_population
             population.extend(elite_population)
+
+            if enable_early_stopping:
+                if max_f == best_fitness:
+                    stagnation_count += 1
+                else:
+                    stagnation_count = 0
+
+                if stagnation_count >= early_stopping_stagnation_epochs:
+                    print(f"Early stopping at generation {gen} due to stagnation.")
+                    break
 
             if gen % 10 == 0 or gen == max_generations - 1:
                 print(f"Pokolenie {gen}: najlepszy fitness = {max_f}")
