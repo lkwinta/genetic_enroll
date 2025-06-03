@@ -4,39 +4,8 @@ import { useRouter } from 'next/navigation';
 
 import React, { useEffect, Dispatch, SetStateAction, useContext } from 'react';
 import { Upload, } from 'lucide-react';
-import { FileObject } from './interfaces/File';
 import DragDrop from './components/DragDrop';
-import Papa from 'papaparse';
 import { FilesContext } from '@/app/utils/FileManager';
-
-const parseFile = (setFile: Dispatch<SetStateAction<FileObject | undefined>>, file?: FileObject) => {
-    if (!file) return;
-    if (file.status !== 'ready') return;
-
-    file.file.text().then((content) => {
-        const parseResult = Papa.parse(content, {
-            header: true,
-            skipEmptyLines: true,
-            dynamicTyping: true,
-            delimitersToGuess: [',', '\t', '|', ';'],
-        });
-
-        if (parseResult.errors.length === 0) {
-            setFile((prev) => ({
-                ...prev!,
-                status: 'success',
-                data: parseResult.data,
-                rowCount: parseResult.data.length,
-            }));
-        } else {
-            setFile((prev) => ({
-                ...prev!,
-                status: 'error',
-                error: 'CSV parsing failed',
-            }));
-        }
-    });
-}
 
 interface CSVFileUploadProps {
     setReady?: Dispatch<SetStateAction<boolean>>;
@@ -52,10 +21,6 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
         setIndividualFile,
     } = useContext(FilesContext);
     const router = useRouter();
-
-    useEffect(() => parseFile(setScheduleFile, scheduleFile), [scheduleFile]);
-    useEffect(() => parseFile(setPreferencesFile, preferencesFile), [preferencesFile]);
-    useEffect(() => parseFile(setIndividualFile, individualFile), [individualFile]);
 
     useEffect(() => {
         if (setReady) {
