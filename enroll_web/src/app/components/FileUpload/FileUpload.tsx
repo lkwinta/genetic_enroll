@@ -7,7 +7,7 @@ import { Upload, } from 'lucide-react';
 import { FileObject } from './interfaces/File';
 import DragDrop from './components/DragDrop';
 import Papa from 'papaparse';
-import { FilesContext } from '@/app/global_state';
+import { FilesContext } from '@/app/utils/FileManager';
 
 const parseFile = (setFile: Dispatch<SetStateAction<FileObject | undefined>>, file?: FileObject) => {
     if (!file) return;

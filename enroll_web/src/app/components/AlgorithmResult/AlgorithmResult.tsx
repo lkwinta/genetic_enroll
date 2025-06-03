@@ -1,42 +1,12 @@
 'use client';
 
-import { FilesContext } from '@/app/global_state';
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import { FilesContext } from '@/app/utils/FileManager';
+import React, { useContext, useEffect, useState } from 'react';
 import { FileObject } from '@/app/components/FileUpload/interfaces/File';
 import { parseIndividualIntoStudentsMap, parseScheduleIntoLessons } from '@/app/utils/TimetableParser';
 import Timetable from '../Timetable/Timetable';
 import Papa from 'papaparse';
 
-
-
-const parseFile = (setFile: Dispatch<SetStateAction<FileObject | undefined>>, file?: FileObject) => {
-    if (!file) return;
-    if (file.status !== 'ready') return;
-
-    file.file.text().then((content) => {
-        const parseResult = Papa.parse(content, {
-            header: true,
-            skipEmptyLines: true,
-            dynamicTyping: true,
-            delimitersToGuess: [',', '\t', '|', ';'],
-        });
-
-        if (parseResult.errors.length === 0) {
-            setFile((prev) => ({
-                ...prev!,
-                status: 'success',
-                data: parseResult.data,
-                rowCount: parseResult.data.length,
-            }));
-        } else {
-            setFile((prev) => ({
-                ...prev!,
-                status: 'error',
-                error: 'CSV parsing failed',
-            }));
-        }
-    });
-}
 
 const AlgorithmResult: React.FC = () => {
     const [results, setResults] = useState<boolean>(false);
@@ -45,12 +15,11 @@ const AlgorithmResult: React.FC = () => {
     const { individualFile, setIndividualFile, scheduleFile } = useContext(FilesContext);
 
     useEffect(() => {
-        parseFile(setIndividualFile, individualFile);
-        setResults(true);
-        studentOnLessons = parseIndividualIntoStudentsMap(individualFile);
+        if (individualFile && individualFile.status === 'ready') {
+            setResults(true);
+            studentOnLessons = parseIndividualIntoStudentsMap(individualFile);
+        }
     }, [individualFile]);
-
-
 
     const formatFileSize = (bytes: number): string => {
         if (bytes === 0) return '0 Bytes';

@@ -14,7 +14,7 @@ import PerformanceSettingsSection from './PerformanceSettingsSection';
 
 import './styles/settings.css';
 import { AlgorithmSettingsState, FitnessFunctionSettingsState, PerformanceSettingsState } from './interfaces/AlgorithmSettings';
-import { FilesContext } from '@/app/global_state';
+import { FilesContext } from '@/app/utils/FileManager';
 import {useRouter} from "next/navigation";
 
 const Settings: React.FC = () => {
