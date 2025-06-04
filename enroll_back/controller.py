@@ -67,14 +67,11 @@ def set_settings(settings):
 
 @app.route('/upload/schedule', methods=['POST'])
 def upload_schedule():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
+    schedule_json = request.get_json()
+    if 'type' not in schedule_json or schedule_json['type'] != 'schedule':
+        return jsonify({"error": "Invalid schedule type"}), 400
 
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
-    df = pd.read_csv(file, sep=";")
+    df = pd.DataFrame(schedule_json['csvData'])
 
     try:
         ray.get(service.load_schedule.remote(df))
@@ -85,14 +82,11 @@ def upload_schedule():
 
 @app.route('/upload/preferences', methods=['POST'])
 def upload_preferences():
-    if 'file' not in request.files:
-        return jsonify({"error": "No file part"}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
-    df = pd.read_csv(file, sep=",")
+    preferences_json = request.get_json()
+    if 'type' not in preferences_json or preferences_json['type'] != 'preferences':
+        return jsonify({"error": "Invalid preferences type"}), 400
+    
+    df = pd.DataFrame(preferences_json['csvData'])
 
     try:
         ray.get(service.load_preferences.remote(df))
@@ -102,22 +96,44 @@ def upload_preferences():
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/evolve', methods=['GET'])
-def elapse():
+@app.route('/start_evolution', methods=['POST'])
+def start_evolution():
     try:
-        best_individual, best_fitness = ray.get(service.evolve.remote(**algorithm_settings,))
+        service.start_evolution.remote(algorithm_settings)
 
-        csv_buffer = io.StringIO()
-        best_individual.to_csv(csv_buffer, sep=";")
-        csv_buffer.seek(0)
-
-        return send_file(
-            io.BytesIO(csv_buffer.getvalue().encode()),
-            mimetype='text/csv',
-        )
+        return jsonify({"message": "Evolution started successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/download/best', methods=['GET'])
+def download_best_individual():
+    try:
+        best = ray.get(service.get_best_individual.remote())
+        if not best['individual']:
+            return jsonify({"error": "No best individual found"}), 404
+    
+        return jsonify(best), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/download/current_best', methods=['GET'])
+def download_current_best():
+    try:
+        current_best = ray.get(service.get_current_best.remote())
+        if not current_best['individual']:
+            return jsonify({"error": "No current best individual found"}), 404
+        
+        return jsonify(current_best), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/get_progress', methods=['GET'])
+def get_progress():
+    try:
+        progress = ray.get(service.get_progress.remote())
+        return jsonify({"progress": progress}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/history', methods=['GET'])
 def history():

@@ -3,7 +3,7 @@
 import React, { useContext } from "react";
 import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
-import { FilesContext } from "@/app/utils/FileManager";
+import { FilesContext } from "@/app/utils/ContextManager";
 import { parsePreferencesIntoLessons } from "@/app/utils/TimetableParser";
 
 const TimetablePage: NextPage = () => {

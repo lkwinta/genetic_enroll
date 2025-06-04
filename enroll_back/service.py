@@ -1,6 +1,7 @@
 import random
 from collections import Counter, defaultdict
 from datetime import datetime, timedelta
+from threading import Thread
 
 import pandas as pd
 import ray
@@ -337,6 +338,11 @@ class Service:
         elite_size = int(len(sorted_indices) * elitism_rate)
         selected_indices = sorted_indices[:elite_size]
         return [population[i] for i in selected_indices]
+    
+
+    def start_evolution(self, kwargs):
+        self.evolution_thread = Thread(target=self.evolve, kwargs=kwargs)
+        self.evolution_thread.start()
 
     def evolve(
             self,
@@ -358,10 +364,14 @@ class Service:
             # penalty_weight,
     ):
         population = self.generate_population(population_size)
-        best_individual = None
-        best_fitness = -1e9
-        self.history = []
         stagnation_count = 0
+        
+        self.history = []
+        self.current_best_individual = None
+        self.current_best_fitness = 1e-9
+        self.status = "running"
+        self.epochs_current = 0
+        self.epochs_total = max_generations
 
         print("Starting evolution...")
         for gen in range(max_generations):
@@ -373,9 +383,9 @@ class Service:
             max_f = max(scores)
             self.history.append(max_f)
 
-            if max_f > best_fitness:
-                best_fitness = max_f
-                best_individual = population[scores.index(max_f)]
+            if max_f > self.current_best_fitness:
+                self.current_best_fitness = max_f
+                self.current_best_individual = population[scores.index(max_f)]
 
             elite_population = self.selection_truncation(
                 population, scores, elitism_rate
@@ -400,7 +410,7 @@ class Service:
             population.extend(elite_population)
 
             if enable_early_stopping:
-                if max_f == best_fitness:
+                if max_f == self.current_best_fitness:
                     stagnation_count += 1
                 else:
                     stagnation_count = 0
@@ -412,11 +422,48 @@ class Service:
             if gen % 10 == 0 or gen == max_generations - 1:
                 print(f"Pokolenie {gen}: najlepszy fitness = {max_f}")
 
-        self.best_individual = best_individual
-        self.best_fitness = best_fitness
+            self.epochs_current = gen + 1
 
-        return best_individual, best_fitness
+        self.best_individual = self.current_best_individual
+        self.best_fitness = self.current_best_fitness
+        self.status = "finished"
+
+    def get_progress(self):
+        """
+        Zwraca postęp ewolucji.
+
+        Zwraca status, aktualną liczbę epok i całkowitą liczbę epok.
+        """
+        return {
+            "status": self.status,
+            "current_epochs": self.epochs_current, 
+            "total_epochs": self.epochs_total
+        }
+
+    def get_current_best(self):
+        """
+        Zwraca aktualnego najlepszego osobnika (plan zajęć) i jego fitness.
+        """
+        return {
+            "fitness": self.current_best_fitness, 
+            "individual": self.current_best_individual
+        }
+
+    def get_best(self):
+        """
+        Zwraca najlepszego osobnika (plan zajęć) po ewolucji.
+        """
+        return {
+            "fitness": self.best_fitness, 
+            "individual": self.best_individual
+        }
     
+    def get_status(self):
+        """
+        Zwraca status ewolucji.
+        """
+        return self.status
+
     def get_history(self):
         """
         Zwraca historię ewolucji (najlepszy fitness w każdym pokoleniu).

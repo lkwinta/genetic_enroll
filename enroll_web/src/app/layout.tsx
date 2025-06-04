@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import StateComponent from "./utils/FileManager";
+import ContextProvider from "./utils/ContextManager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +29,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div className="content-center min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900 p-6">
-          <StateComponent>
+          <ContextProvider>
             {children}
-          </StateComponent>
+          </ContextProvider>
         </div>
 
       </body>

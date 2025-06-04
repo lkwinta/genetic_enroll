@@ -1,7 +1,7 @@
-import { FileObject } from  "@/app/components/FileUpload/interfaces/File";
 import { TIME_SLOTS, DAYS} from "@/app/components/Timetable/components/TimetableConsts";
 import { Lesson, LessonsList, Day } from "@/app/components/Timetable/interfaces/Lesson";
 import { ColorClass } from "@/app/components/Timetable/components/TimetableLessonCard";
+import { CSVInput } from "./ContextManager";
 
 const DAY_MAP: Record<string, string> = {
   Pn: 'Monday',
@@ -24,13 +24,13 @@ const findSlot = (start: string): string | null => {
     return TIME_SLOTS.find(slot => slot.startsWith(normalized)) ?? null;
 };
 
-const parseScheduleIntoLessons = (file?: FileObject) => {
-    if (!file || file.status !== 'success') return { lessons: {}, subjectColorMap: {} };
+const parseScheduleIntoLessons = (csv: CSVInput) => {
+    if (csv.type != 'schedule') return { lessons: {}, subjectColorMap: {} };
 
     const newLessons: LessonsList = {};
     const subjects = new Set<string>();
 
-    file!.data!.forEach((row, idx) => {
+    csv.csvData.forEach((row, idx) => {
         const dayKey = DAY_MAP[row.day];
         if (!dayKey || !DAYS.includes(dayKey)) {
             console.warn(`Nieznany dzień w wierszu ${idx + 1}:`, row.day);
@@ -72,7 +72,9 @@ const parseScheduleIntoLessons = (file?: FileObject) => {
     }
 }
 
-const parsePreferencesIntoLessons = (file?: FileObject)  => {
+const parsePreferencesIntoLessons = (csv: CSVInput)  => {
+    if (csv.type != 'preferences') return {};
+
     return {
         lessons: {},
         subjectColorMap: {}
@@ -80,13 +82,13 @@ const parsePreferencesIntoLessons = (file?: FileObject)  => {
 }
 
 
-const parseIndividualIntoStudentsMap = (individualFile?: FileObject)  => {
-    if (!individualFile || individualFile.status !== 'success') return {};
+const parseIndividualIntoStudentsMap = (csv: CSVInput)  => {
+    if (csv.type != 'individual') return {};
 
     const studentsOnLessons: Record<string, string[]> = {};
 
 
-    individualFile!.data!.forEach((row) => {
+    csv.csvData.forEach((row) => {
         const student = row[""];
         const entries = Object.entries(row);
 

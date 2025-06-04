@@ -2,10 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 
-import React, { useEffect, Dispatch, SetStateAction, useContext } from 'react';
+import React, { useEffect, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { Upload, } from 'lucide-react';
 import DragDrop from './components/DragDrop';
-import { FilesContext } from '@/app/utils/FileManager';
+import { CSVInput, CSVType, DataContext } from '@/app/utils/ContextManager';
+import { FileObject } from './interfaces/File';
+import Papa from 'papaparse';
 
 interface CSVFileUploadProps {
     setReady?: Dispatch<SetStateAction<boolean>>;
@@ -13,14 +15,16 @@ interface CSVFileUploadProps {
 
 const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
     const {
-        scheduleFile,
-        setScheduleFile,
-        preferencesFile,
-        setPreferencesFile,
-        individualFile,
-        setIndividualFile,
-    } = useContext(FilesContext);
+        setSchedule,
+        setPreferences,
+    } = useContext(DataContext);
     const router = useRouter();
+
+    const [scheduleFile, setScheduleFile] = useState<FileObject | undefined>(undefined);
+    const [preferencesFile, setPreferencesFile] = useState<FileObject | undefined>(undefined);
+
+    useEffect(() => parseFile('schedule', setSchedule, setScheduleFile, scheduleFile), [scheduleFile]);
+    useEffect(() => parseFile('preferences', setPreferences, setPreferencesFile, preferencesFile), [preferencesFile]);
 
     useEffect(() => {
         if (setReady) {
@@ -30,7 +34,7 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
             );
         }
     }, [scheduleFile, preferencesFile]);
-    
+
 
     return (
         <div className="max-w-6xl mx-auto">
@@ -71,22 +75,47 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
                         }
                     }}
                 />
-                {/* Just for debug TODO: Remove */}
-                <DragDrop
-                    title="Individual Debug Upload TODO: Remove"
-                    description="Individual object CSV file TODO: Remove"
-                    file={individualFile}
-                    onFileChange={setIndividualFile}
-                    viewButtonEnabled={true}
-                    viewButtonOnClick={() => {
-                        if (individualFile) {
-                            router.push(`/pages/individual`);
-                        }
-                    }}
-                />
             </div>
         </div>
     );
 };
 
 export default CSVFileUpload;
+
+const parseFile = (
+    type: CSVType,
+    setCSV: Dispatch<SetStateAction<CSVInput | undefined>>,
+    setFile: Dispatch<SetStateAction<FileObject | undefined>>,
+    file?: FileObject) => {
+    if (!file) return;
+    if (file.status !== 'ready') return;
+
+    file.file.text().then((content) => {
+        const parseResult = Papa.parse(content, {
+            header: true,
+            skipEmptyLines: true,
+            dynamicTyping: true,
+            delimitersToGuess: [',', '\t', '|', ';'],
+        });
+
+        if (parseResult.errors.length === 0) {
+            setFile((prev) => ({
+                ...prev!,
+                status: 'success',
+                data: parseResult.data,
+                rowCount: parseResult.data.length,
+            }));
+
+            setCSV({
+                type: type,
+                csvData: parseResult.data,
+            } as CSVInput);
+        } else {
+            setFile((prev) => ({
+                ...prev!,
+                status: 'error',
+                error: 'CSV parsing failed',
+            }));
+        }
+    });
+}

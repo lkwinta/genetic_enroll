@@ -1,6 +1,6 @@
 'use client';
 
-import { FilesContext } from '@/app/utils/FileManager';
+import { DataContext } from '@/app/utils/ContextManager';
 import React, { useContext, useEffect, useState } from 'react';
 import { FileObject } from '@/app/components/FileUpload/interfaces/File';
 import { parseIndividualIntoStudentsMap, parseScheduleIntoLessons } from '@/app/utils/TimetableParser';
@@ -12,74 +12,86 @@ const AlgorithmResult: React.FC = () => {
     const [results, setResults] = useState<boolean>(false);
     const [scores, setScores] = useState<number[] | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const { individualFile, setIndividualFile, scheduleFile } = useContext(FilesContext);
+    const { individual, schedule, setIndividual } = useContext(DataContext);
 
-    useEffect(() => {
-        if (individualFile && individualFile.status === 'ready') {
-            setResults(true);
-            studentOnLessons = parseIndividualIntoStudentsMap(individualFile);
-        }
-    }, [individualFile]);
-
-    const formatFileSize = (bytes: number): string => {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    };
-
-    const { lessons, subjectColorMap } = parseScheduleIntoLessons(scheduleFile);
+    const { lessons, subjectColorMap } = parseScheduleIntoLessons(schedule!);
     let studentOnLessons: Record<string, string[]> = {}
-
+    
     useEffect(() => {
-        const fetchResults = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:5000/evolve", {
-                    method: "GET",
-                });
+        if (individual) {
+            setResults(true);
+            studentOnLessons = parseIndividualIntoStudentsMap(individual);
+        }
+    }, [individual]);
 
-                if (!response.ok) {
-                    throw new Error("Failed to fetch results");
-                }
-
-                const blob = await response.blob();
-                const newFile = new File([blob], "aaaaaaaaaaa.csv", { type: "text/csv" });
-                
-                const fileObj: FileObject = {
-                    id: Math.random().toString(36).substr(2, 9),
-                    file: newFile,
-                    name: newFile.name,
-                    size: formatFileSize(newFile.size),
-                    status: 'ready'
-                };
-
-                setIndividualFile(fileObj);
-            } catch (err: any) {
-                setError(err.message);
+    const interval = setInterval(() => {
+        fetch("http://localhost:5000/get_progress", {
+            method: "GET",
+        }).then(response => {
+            console.log("Fetching progress...");
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Failed to fetch progress");
             }
-        };
+        }).then(data => {
+            console.log("Progress data:", data);
+        });
+    }, 1000);
 
-        const fetchScores = async () => {
-            try {
-                const response = await fetch("http://127.0.0.1:5000/score", {
-                    method: "GET",
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to fetch scores");
-                }
-
-                const scoresData = await response.json();
-                setScores(scoresData);
-            } catch (err: any) {
-                setError(err.message);
-            }
-        };
-
-        fetchResults();
-        fetchScores();
+    useEffect( () => () => {
+        console.log("Cleaning up interval");
+        clearInterval(interval);
     }, []);
+
+    // useEffect(() => {
+    //     const fetchResults = async () => {
+    //         try {
+    //             const response = await fetch("http://127.0.0.1:5000/evolve", {
+    //                 method: "GET",
+    //             });
+
+    //             if (!response.ok) {
+    //                 throw new Error("Failed to fetch results");
+    //             }
+
+    //             const blob = await response.blob();
+    //             const newFile = new File([blob], "aaaaaaaaaaa.csv", { type: "text/csv" });
+                
+    //             const fileObj: FileObject = {
+    //                 id: Math.random().toString(36).substr(2, 9),
+    //                 file: newFile,
+    //                 name: newFile.name,
+    //                 size: formatFileSize(newFile.size),
+    //                 status: 'ready'
+    //             };
+
+    //             setIndividualFile(fileObj);
+    //         } catch (err: any) {
+    //             setError(err.message);
+    //         }
+    //     };
+
+    //     const fetchScores = async () => {
+    //         try {
+    //             const response = await fetch("http://127.0.0.1:5000/score", {
+    //                 method: "GET",
+    //             });
+
+    //             if (!response.ok) {
+    //                 throw new Error("Failed to fetch scores");
+    //             }
+
+    //             const scoresData = await response.json();
+    //             setScores(scoresData);
+    //         } catch (err: any) {
+    //             setError(err.message);
+    //         }
+    //     };
+
+    //     fetchResults();
+    //     fetchScores();
+    // }, []);
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8">

@@ -3,13 +3,13 @@
 import React, { useContext } from "react";
 import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
-import { FilesContext } from "@/app/utils/FileManager";
+import { DataContext } from "@/app/utils/ContextManager";
 import { parseScheduleIntoLessons } from "@/app/utils/TimetableParser";
 
 const TimetablePage: NextPage = () => {
-    const { scheduleFile } = useContext(FilesContext);
+    const { schedule } = useContext(DataContext);
 
-    if (!scheduleFile) {
+    if (!schedule) {
         return (
             <div className="p-6 max-w-8xl mx-auto">
                 <h1 className="text-2xl font-bold">No schedule file uploaded</h1>
@@ -18,7 +18,7 @@ const TimetablePage: NextPage = () => {
         );
     }
 
-    const { lessons, subjectColorMap } = parseScheduleIntoLessons(scheduleFile);
+    const { lessons, subjectColorMap } = parseScheduleIntoLessons(schedule);
 
     return (
         <Timetable
