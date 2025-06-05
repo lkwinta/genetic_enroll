@@ -6,7 +6,6 @@ from threading import Thread
 import pandas as pd
 import ray
 
-@ray.remote
 class Service:
     def __init__(self):
         self.plan = None

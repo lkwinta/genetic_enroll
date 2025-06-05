@@ -6,13 +6,26 @@ import ray
 if ray.is_initialized():
     ray.shutdown()
 ray.init()
-service = Service.remote()
+service = Service()
 
 preferences = pd.read_csv("../data/preferences/preferences_1.csv", sep=',')
 schedule = pd.read_csv("../data/schedules/schedule_1.csv", sep=";")
 
-ray.get(service.load_schedule.remote(schedule))
-ray.get(service.load_preferences.remote(preferences))
+service.load_schedule(schedule)
+service.load_preferences(preferences)
 
-ray.get(service.generate_population.remote(1000))
+service.generate_population(1000)
 
+print(service.evolve(
+    max_generations=100,
+    population_size=10,
+    mutation_rate=0.1,
+    crossover_rate=0.9,
+    elitism_rate=0.2,
+    selection_type="truncation",
+    enable_early_stopping=False,
+    early_stopping_stagnation_epochs=5,
+    tournament_size=5,
+    mutation_type="gaussian",
+    crossover_type="uniform",
+))
