@@ -206,6 +206,12 @@ class Service:
             if max_f > self.current_best_fitness:
                 self.current_best_fitness = max_f
                 self.current_best_individual = population[scores.index(max_f)]
+                stagnation_count = 0
+            else:
+                stagnation_count += 1
+                if enable_early_stopping and stagnation_count >= early_stopping_stagnation_epochs:
+                    print("Early stopping triggered due to stagnation.")
+                    break
 
             elite_population = self.selection_truncation(
                 population, scores, elitism_rate
@@ -229,16 +235,6 @@ class Service:
 
             population = ray.get(new_population)
             population.extend(elite_population)
-
-            if enable_early_stopping:
-                if max_f == self.current_best_fitness:
-                    stagnation_count += 1
-                else:
-                    stagnation_count = 0
-
-                if stagnation_count >= early_stopping_stagnation_epochs:
-                    print(f"Early stopping at generation {gen} due to stagnation.")
-                    break
 
             if gen % 10 == 0 or gen == max_generations - 1:
                 print(f"Pokolenie {gen}: najlepszy fitness = {max_f}")

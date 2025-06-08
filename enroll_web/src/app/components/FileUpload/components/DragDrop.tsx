@@ -16,7 +16,7 @@ interface DragDropProps {
 
 const DragDropFile: FC<DragDropProps> = ({ title, description, file, onFileChange, viewButtonEnabled = false, viewButtonOnClick }) => {
   return (
-    <div className="rounded-lg shadow-lg overflow-hidden bg-white dark:bg-gray-800">
+    <div className="rounded-lg shadow-md border border-gray-300 dark:border-gray-600 overflow-hidden bg-white dark:bg-gray-800">
       <DragDropHeader title={title} viewButtonEnabled={!!file && viewButtonEnabled} viewButtonOnClick={viewButtonOnClick} />
 
       {!file ?

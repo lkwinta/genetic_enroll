@@ -45,7 +45,7 @@ const Settings: React.FC = () => {
         earlyStoppingEnabled: true,
         earlyStoppingStagnationEpochs: 50,
 
-        selectionType: "Truncation",
+        selectionType: "truncation",
         tournamentSize: 5,
 
         crossoverRate: 0.8,

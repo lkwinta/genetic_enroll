@@ -2,7 +2,7 @@ import {Dispatch, SetStateAction} from 'react';
 
 export type MutationType = 'A' | 'B';
 export type CrossoverType = 'A' | 'B'; 
-export type SelectionType = 'Truncation' | 'Tournament';
+export type SelectionType = 'truncation' | 'tournament';
 
 export interface AlgorithmSettingsState {
     mutationType: MutationType;

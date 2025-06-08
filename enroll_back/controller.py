@@ -16,8 +16,8 @@ performance_settings = {}
 
 if ray.is_initialized():
     ray.shutdown()
-ray.init()
-service = Service.remote()
+ray.init(num_cpus=8)
+service = Service()
 
 @app.route("/settings", methods=["POST"])
 def process_settings():
@@ -74,7 +74,7 @@ def upload_schedule():
     df = pd.DataFrame(schedule_json['csvData'])
 
     try:
-        ray.get(service.load_schedule.remote(df))
+        service.load_schedule(df)
         return jsonify({"message": "Schedule loaded successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -89,7 +89,7 @@ def upload_preferences():
     df = pd.DataFrame(preferences_json['csvData'])
 
     try:
-        ray.get(service.load_preferences.remote(df))
+        service.load_preferences(df)
         return jsonify({"message": "Preferences loaded successfully"}), 200
     except Exception as e:
         print(f"Error loading preferences: {e}")
@@ -99,7 +99,7 @@ def upload_preferences():
 @app.route('/start_evolution', methods=['POST'])
 def start_evolution():
     try:
-        service.start_evolution.remote(algorithm_settings)
+        service.start_evolution(algorithm_settings)
 
         return jsonify({"message": "Evolution started successfully"}), 200
     except Exception as e:
@@ -108,7 +108,7 @@ def start_evolution():
 @app.route('/download/best', methods=['GET'])
 def download_best_individual():
     try:
-        best = ray.get(service.get_best_individual.remote())
+        best = service.get_best()
         if not best['individual']:
             return jsonify({"error": "No best individual found"}), 404
     
@@ -119,7 +119,7 @@ def download_best_individual():
 @app.route('/download/current_best', methods=['GET'])
 def download_current_best():
     try:
-        current_best = ray.get(service.get_current_best.remote())
+        current_best = service.get_current_best()
         if not current_best['individual']:
             return jsonify({"error": "No current best individual found"}), 404
         
@@ -130,16 +130,16 @@ def download_current_best():
 @app.route('/get_progress', methods=['GET'])
 def get_progress():
     try:
-        progress = ray.get(service.get_progress.remote())
+        progress = service.get_progress()
         return jsonify({"progress": progress}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/history', methods=['GET'])
-def history():
+@app.route('/get_history', methods=['GET'])
+def get_history():
     try:
-        history_data = ray.get(service.get_history.remote())
-        return jsonify(history_data), 200
+        history_data = service.get_history()
+        return jsonify({"history": history_data}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -147,7 +147,7 @@ def history():
 @app.route('/score', methods=['GET'])
 def score_per_student():
     try:
-        scores = ray.get(service.score_per_student.remote())
+        scores = service.score_per_student()
         return jsonify(scores), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

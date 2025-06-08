@@ -1,6 +1,6 @@
 import React, {FC, Dispatch, SetStateAction} from "react";
 
-import { AlgorithmSettingsState, updateSettingFactory, MutationType } from "./interfaces/AlgorithmSettings";
+import { AlgorithmSettingsState, updateSettingFactory, MutationType, SelectionType } from "./interfaces/AlgorithmSettings";
 import SettingsSection from "./components/SettingsSection";
 import NumberInput from "./components/SettingsNumberInput";
 import { Zap } from "lucide-react";
@@ -54,15 +54,15 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         <Dropdown
           label="Selection Type"
           options={[
-            { value: 'Truncation', label: 'Truncation' },
-            { value: 'Tournament', label: 'Tournament' },
+            { value: 'truncation', label: 'Truncation' },
+            { value: 'tournament', label: 'Tournament' },
           ]}
           value={settings.selectionType}
-          onChange={(value) => updateSetting('selectionType', value as AlgorithmSettingsState['selectionType'])}
+          onChange={(value) => updateSetting('selectionType', value as SelectionType)}
           description="Method for selecting parents for reproduction"
         />
-        {settings.selectionType === 'Tournament' && <NumberInput
-          enabled={settings.selectionType === 'Tournament'}
+        {settings.selectionType === 'tournament' && <NumberInput
+          enabled={settings.selectionType === 'tournament'}
           label="Tournament Size"
           value={settings.tournamentSize}
           onChange={(value) => updateSetting('tournamentSize', value)}

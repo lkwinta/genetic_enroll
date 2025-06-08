@@ -25,7 +25,6 @@ const EmptyFileView: FC<EmptyFileViewProps> = ({ description, onFileChange }) =>
     }
 
     const fileObj: FileObject = {
-      id: Math.random().toString(36).substr(2, 9),
       file: newFile,
       name: newFile.name,
       size: formatFileSize(newFile.size),
