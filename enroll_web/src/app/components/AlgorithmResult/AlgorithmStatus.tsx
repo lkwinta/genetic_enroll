@@ -24,37 +24,14 @@ export interface AlgorithmStatusProps {
 
 const AlgorithmStatus: React.FC<AlgorithmStatusProps> = ({ progress, fitnessHistory, viewButton = false }) => {
     const router = useRouter();
-    const { setIndividual } = React.useContext(DataContext);
-
+   
     return (
         <AlgorithmResultsSection
             title="Algorithm Status"
             viewButton={viewButton}
             viewButtonText="View Full Results"
             viewButtonOnClick={async () => {
-                const response = await fetchFromBackend('get_best');
-                
-                const parseResult = Papa.parse<IndividualRowType>(response.individual.csvString, {
-                    header: true,
-                    newline: '\n',
-                    skipEmptyLines: true,
-                    dynamicTyping: true,
-                    delimitersToGuess: [',', '\t', '|', ';'],
-                });
-                
-                if (parseResult.errors.length === 0) {
-                    console.log(parseResult.data);
-                    setIndividual({
-                        fitness: response.fitness,
-                        individual: {
-                            type: response.individual.type as CSVType,
-                            csvData: parseResult.data
-                        }
-                    });
-                    router.push('/pages/individual');
-                } else {
-                    console.error('Failed to parse individual data:', parseResult.errors);
-                }
+               router.push('/pages/individual');
             }}
         >
             <div className="flex items-center justify-between mb-2">

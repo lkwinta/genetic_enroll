@@ -33,7 +33,7 @@ export interface CSVInput<RowType> {
     csvData: RowType[];
 }
 
-type IndividualType = {
+export type IndividualType = {
     fitness: number;
     individual: CSVInput<IndividualRowType>;
 }
@@ -47,6 +47,9 @@ export interface DataContext {
 
     individual?: IndividualType;
     setIndividual: Dispatch<SetStateAction<IndividualType | undefined>>;
+
+    selectedStudent?: string;
+    setSelectedStudent: Dispatch<SetStateAction<string | undefined>>;
 }
 
 export const DataContext = createContext<DataContext>({
@@ -55,7 +58,9 @@ export const DataContext = createContext<DataContext>({
     preferences: undefined,
     setPreferences: () => {},
     individual: undefined,
-    setIndividual: () => {}
+    setIndividual: () => {},
+    selectedStudent: undefined,
+    setSelectedStudent: () => {}
 });
 
 interface ContextProviderProps {
@@ -66,6 +71,7 @@ const ContextProvider: FC<ContextProviderProps> = ({ children }) => {
     const [schedule, setSchedule] = useState<CSVInput<ScheduleRowType> | undefined>(undefined);
     const [preferences, setPreferences] = useState<CSVInput<PreferencesRowType> | undefined>(undefined);
     const [individual, setIndividual] = useState<IndividualType | undefined>(undefined);
+    const [selectedStudent, setSelectedStudent] = useState<string | undefined>(undefined);
 
     return (
         <DataContext.Provider value={{
@@ -74,7 +80,9 @@ const ContextProvider: FC<ContextProviderProps> = ({ children }) => {
             preferences,
             setPreferences,
             individual,
-            setIndividual
+            setIndividual,
+            selectedStudent,
+            setSelectedStudent
         }}>
             {children}
         </DataContext.Provider>

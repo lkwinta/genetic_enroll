@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext, Dispatch, SetStateAction } from 'react';
 import AlgorithmScoreResults, { StudentScore } from './AlgorithmScoreResults';
 import AlgorithmStatus, { Progress } from './AlgorithmStatus';
 import { fetchFromBackend } from '@/app/utils/BackendController';
+import { CSVType, DataContext, IndividualRowType, IndividualType } from '@/app/utils/ContextManager';
+import Papa from 'papaparse';
 
 const AlgorithmResult: React.FC = () => {
     const [progress, setProgress] = useState<Progress>({
@@ -15,6 +17,8 @@ const AlgorithmResult: React.FC = () => {
     const [fitnessHistory, setFitnessHistory] = useState<number[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [ready, setReady] = useState<boolean>(false);
+    const { setIndividual } = useContext(DataContext);
+
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
@@ -49,6 +53,10 @@ const AlgorithmResult: React.FC = () => {
         fetchFromBackend("get_student_scores")
             .then(data => setScores(data.scores))
             .catch(err => setError(`Failed to fetch scores: ${err.message}`));
+
+        fetchIndividualData()
+            .then(setIndividual)
+            .catch(err => setError(`Failed to fetch individual data: ${err.message}`));
     }, [ready]);
 
     return (
@@ -64,5 +72,29 @@ const AlgorithmResult: React.FC = () => {
         </div>
     );
 };
+
+async function fetchIndividualData(): Promise<IndividualType> {
+    const response = await fetchFromBackend('get_best');
+                
+    const parseResult = Papa.parse<IndividualRowType>(response.individual.csvString, {
+        header: true,
+        newline: '\n',
+        skipEmptyLines: true,
+        dynamicTyping: true,
+        delimitersToGuess: [',', '\t', '|', ';'],
+    });
+    
+    if (parseResult.errors.length === 0) {
+        return {
+            fitness: response.fitness,
+            individual: {
+                type: response.individual.type as CSVType,
+                csvData: parseResult.data
+            }
+        };
+    } else {
+        throw new Error(`Failed to parse individual data: ${parseResult.errors.map(e => e.message).join(', ')}`);
+    }
+}
 
 export default AlgorithmResult;

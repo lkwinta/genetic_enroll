@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import AlgorithmResultsSection from './components/AlgorithmResultsSection';
+import InfoCard from '../Settings/components/SettingsInfoCard';
+import { DataContext } from '@/app/utils/ContextManager';
+import { useRouter } from 'next/navigation';
 
 export type StudentScore = {
     student: string;
@@ -12,13 +15,32 @@ export interface AlgorithmScoreResultsProps {
 };
 
 const AlgorithmScoreResults: React.FC<AlgorithmScoreResultsProps> = ({ scores }) => {
+    const { setSelectedStudent } = useContext(DataContext);
+    const router = useRouter();
+    
+    let sortedScores = scores ? [...scores].sort((a, b) => b.score - a.score) : [];
+
+    const handleScoreClick = (student: string) => {
+        setSelectedStudent(student);
+        router.push('/pages/student');
+    };
+
     return (
         <AlgorithmResultsSection
             title="Scores Per Student"
         >
-            {scores && scores.length > 0 ? (
+            {sortedScores && sortedScores.length > 0 ? (
                 <>
-                    <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white"></h2>
+                    <InfoCard 
+                        type='info' 
+                        title='Scores' 
+                        message="The scores are calculated based on the algorithm's evaluation of each student's timetable. Higher scores indicate better alignment with the algorithm's objectives." 
+                    />
+                    <InfoCard 
+                        type='warning' 
+                        title='' 
+                        message="By clicking on a student's score, you can view their timetable and see how the algorithm has optimized their schedule." 
+                    />
                     <div className="border rounded-lg overflow-hidden border-gray-200 dark:border-gray-600">
                         <table className="w-full border-separate border-spacing-0 border-tools-table-outline">
                             <thead>
@@ -29,8 +51,8 @@ const AlgorithmScoreResults: React.FC<AlgorithmScoreResultsProps> = ({ scores })
                                 </tr>
                             </thead>
                             <tbody className="bg-white dark:bg-gray-800">
-                                {scores.map(({ student, score, max_score }) => (
-                                    <tr key={student} className="hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors">
+                                {sortedScores.map(({ student, score, max_score }) => (
+                                    <tr key={student} className="hover:bg-gray-100/50 dark:hover:bg-gray-700/50 transition-colors hover:cursor-pointer" onClick={() => handleScoreClick(student)}>
                                         <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-white">{student}</td>
                                         <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-white">{score}</td>
                                         <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-gray-900 dark:text-white">{max_score}</td>
