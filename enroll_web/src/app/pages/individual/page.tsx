@@ -3,28 +3,29 @@
 import React, { useContext } from "react";
 import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
-import { FilesContext } from "@/app/utils/ContextManager";
+import { DataContext } from "@/app/utils/ContextManager";
 import { parseIndividualIntoStudentsMap, parseScheduleIntoLessons } from "@/app/utils/TimetableParser";
 
 const TimetablePage: NextPage = () => {
-    const { scheduleFile, individualFile } = useContext(FilesContext);
+    const { schedule, individual } = useContext(DataContext);
 
-    if (!scheduleFile || !individualFile) {
+    if (!schedule || !individual) {
         return (
             <div className="p-6 max-w-8xl mx-auto">
-                <h1 className="text-2xl font-bold">No schedule file uploaded</h1>
+                <h1 className="text-2xl font-bold">No schedule or individual file uploaded</h1>
                 <p>Please upload a schedule file to view the timetable.</p>
             </div>
         );
     }
 
-    const { lessons, subjectColorMap } = parseScheduleIntoLessons(scheduleFile);
-    const studentOnLessons = parseIndividualIntoStudentsMap(individualFile);
-    console.log(studentOnLessons);
+    console.log("Individual:", individual);
+    const { lessons, subjectColorMap } = parseScheduleIntoLessons(schedule);
+    const studentOnLessons = parseIndividualIntoStudentsMap(individual.individual);
+
     return (
         <Timetable
             lessons={lessons}
-            header="Individual Inspect"
+            header={`Individual Inspect, fitness: ${individual.fitness}`}
             coloringFunction={(lesson) => subjectColorMap[lesson.subject] || 'teal'}
             clickable={true}
             onClick={(lesson) => {

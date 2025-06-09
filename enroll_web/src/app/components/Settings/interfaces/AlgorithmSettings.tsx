@@ -34,6 +34,12 @@ export interface PerformanceSettingsState {
     threadCount: number;
 }
 
+export interface SettingsState {
+    algorithmSettings: AlgorithmSettingsState;
+    fitnessFunctionSettings: FitnessFunctionSettingsState;
+    performanceSettings: PerformanceSettingsState;
+}
+
 export function updateSettingFactory<T>(setFunction: Dispatch<SetStateAction<T>>){
     return (<K extends keyof T>(key: K, value: T[K]) => {
         setFunction((prev) => ({

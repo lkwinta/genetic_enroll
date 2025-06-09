@@ -5,7 +5,6 @@ import { Lesson, LessonsList } from '../interfaces/Lesson';
 import LessonCard, { ColorClass } from './TimetableLessonCard';
 
 import '../styles/timetable.css';
-import { randomUUID } from 'crypto';
 
 export const getLessonKey = (day: string, timeSlot: string): string => `${day}-${timeSlot}`;
 
@@ -32,7 +31,7 @@ const LessonCell: React.FC<LessonCellProps> = ({
   return (
     <div className="p-1 min-h-32 space-y-1">
       <div className="grid gap-1 grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3">
-        {lessonList.map((lesson, _) => (
+        {lessonList.map((lesson) => (
           <LessonCard
             key={crypto.randomUUID()}
             lesson={lesson}

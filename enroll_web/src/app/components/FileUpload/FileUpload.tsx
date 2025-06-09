@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { Upload, } from 'lucide-react';
 import DragDrop from './components/DragDrop';
-import { CSVInput, CSVType, DataContext } from '@/app/utils/ContextManager';
+import { CSVInput, CSVType, DataContext, PreferencesRowType, ScheduleRowType } from '@/app/utils/ContextManager';
 import { FileObject } from './interfaces/File';
 import Papa from 'papaparse';
 
@@ -20,11 +20,11 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
     } = useContext(DataContext);
     const router = useRouter();
 
-    const [scheduleFile, setScheduleFile] = useState<FileObject | undefined>(undefined);
-    const [preferencesFile, setPreferencesFile] = useState<FileObject | undefined>(undefined);
+    const [scheduleFile, setScheduleFile] = useState<FileObject<ScheduleRowType> | undefined>(undefined);
+    const [preferencesFile, setPreferencesFile] = useState<FileObject<PreferencesRowType> | undefined>(undefined);
 
-    useEffect(() => parseFile('schedule', setSchedule, setScheduleFile, scheduleFile), [scheduleFile]);
-    useEffect(() => parseFile('preferences', setPreferences, setPreferencesFile, preferencesFile), [preferencesFile]);
+    useEffect(() => parseFile('schedule', setSchedule, setScheduleFile, scheduleFile), [scheduleFile, setSchedule]);
+    useEffect(() => parseFile('preferences', setPreferences, setPreferencesFile, preferencesFile), [preferencesFile, setPreferences]);
 
     useEffect(() => {
         if (setReady) {
@@ -33,7 +33,7 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
                 (preferencesFile !== undefined && preferencesFile.status === 'success')
             );
         }
-    }, [scheduleFile, preferencesFile]);
+    }, [scheduleFile, preferencesFile, setReady]);
 
 
     return (
@@ -82,16 +82,16 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
 
 export default CSVFileUpload;
 
-const parseFile = (
+const parseFile = <RowType, >(
     type: CSVType,
-    setCSV: Dispatch<SetStateAction<CSVInput | undefined>>,
-    setFile: Dispatch<SetStateAction<FileObject | undefined>>,
-    file?: FileObject) => {
+    setCSV: Dispatch<SetStateAction<CSVInput<RowType> | undefined>>,
+    setFile: Dispatch<SetStateAction<FileObject<RowType> | undefined>>,
+    file?: FileObject<RowType>) => {
     if (!file) return;
     if (file.status !== 'ready') return;
 
     file.file.text().then((content) => {
-        const parseResult = Papa.parse(content, {
+        const parseResult = Papa.parse<RowType>(content, {
             header: true,
             skipEmptyLines: true,
             dynamicTyping: true,
@@ -99,6 +99,8 @@ const parseFile = (
         });
 
         if (parseResult.errors.length === 0) {
+            console.log(parseResult.data);
+
             setFile((prev) => ({
                 ...prev!,
                 status: 'success',
@@ -109,7 +111,7 @@ const parseFile = (
             setCSV({
                 type: type,
                 csvData: parseResult.data,
-            } as CSVInput);
+            });
         } else {
             setFile((prev) => ({
                 ...prev!,

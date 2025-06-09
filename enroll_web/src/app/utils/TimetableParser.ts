@@ -1,7 +1,7 @@
 import { TIME_SLOTS, DAYS} from "@/app/components/Timetable/components/TimetableConsts";
 import { Lesson, LessonsList, Day } from "@/app/components/Timetable/interfaces/Lesson";
 import { ColorClass } from "@/app/components/Timetable/components/TimetableLessonCard";
-import { CSVInput } from "./ContextManager";
+import { CSVInput, IndividualRowType, PreferencesRowType, ScheduleRowType } from "./ContextManager";
 
 const DAY_MAP: Record<string, string> = {
   Pn: 'Monday',
@@ -24,7 +24,7 @@ const findSlot = (start: string): string | null => {
     return TIME_SLOTS.find(slot => slot.startsWith(normalized)) ?? null;
 };
 
-const parseScheduleIntoLessons = (csv: CSVInput) => {
+const parseScheduleIntoLessons = (csv: CSVInput<ScheduleRowType>) => {
     if (csv.type != 'schedule') return { lessons: {}, subjectColorMap: {} };
 
     const newLessons: LessonsList = {};
@@ -72,7 +72,7 @@ const parseScheduleIntoLessons = (csv: CSVInput) => {
     }
 }
 
-const parsePreferencesIntoLessons = (csv: CSVInput)  => {
+const parsePreferencesIntoLessons = (csv: CSVInput<PreferencesRowType>)  => {
     if (csv.type != 'preferences') return {};
 
     return {
@@ -82,7 +82,7 @@ const parsePreferencesIntoLessons = (csv: CSVInput)  => {
 }
 
 
-const parseIndividualIntoStudentsMap = (csv: CSVInput)  => {
+const parseIndividualIntoStudentsMap = (csv: CSVInput<IndividualRowType>)  => {
     if (csv.type != 'individual') return {};
 
     const studentsOnLessons: Record<string, string[]> = {};

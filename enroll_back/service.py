@@ -49,7 +49,6 @@ class Service:
         self.best_individual = None
         self.best_fitness = None
         self.history = None
-        self.score_per_student = None
 
     def load_schedule(self, schedule_df):
         self.plan = schedule_df.copy()
@@ -151,7 +150,7 @@ class Service:
 
     def selection_truncation(self, population, scores, elitism_rate):
         """
-        Wybiera osobników do krzyżowania na podstawie selekcji truncacyjnej.
+        Wybiera osobników do krzyżowania na podstawie selekcji trunkacyjnej.
         """
         sorted_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)
         elite_size = int(len(sorted_indices) * elitism_rate)
@@ -288,7 +287,7 @@ class Service:
         return self.history
 
     def score_per_student(self):
-        scores = []
+        scores: list[dict] = []
         max_points = self.pref.groupby(["student_id", "subject"])["preference"].max()
 
         for student in self.best_individual.index:
@@ -301,8 +300,11 @@ class Service:
 
                 student_score += points
 
-            scores.append(round(student_score / student_max, 2))
-        self.score_per_student = scores
+            scores.append({
+                "student": student,
+                "score": int(student_score),
+                "max_score": int(student_max),
+            })
         return scores
 
 @ray.remote

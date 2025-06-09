@@ -1,13 +1,13 @@
 import { Upload } from 'lucide-react';
-import React, { useState, useRef, FC, DragEvent, ChangeEvent } from 'react';
+import React, { useState, useRef, DragEvent, ChangeEvent } from 'react';
 import { FileObject } from '../interfaces/File';
 
-interface EmptyFileViewProps {
+interface EmptyFileViewProps<RowType> {
   description: string;
-  onFileChange: (file?: FileObject) => void;
+  onFileChange: (file?: FileObject<RowType>) => void;
 }
 
-const EmptyFileView: FC<EmptyFileViewProps> = ({ description, onFileChange }) => {
+const EmptyFileView = <RowType,>({ description, onFileChange }: EmptyFileViewProps<RowType>) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState<boolean>(false);
 
@@ -24,7 +24,7 @@ const EmptyFileView: FC<EmptyFileViewProps> = ({ description, onFileChange }) =>
       return;
     }
 
-    const fileObj: FileObject = {
+    const fileObj: FileObject<RowType> = {
       file: newFile,
       name: newFile.name,
       size: formatFileSize(newFile.size),

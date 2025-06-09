@@ -4,20 +4,49 @@ import { createContext, Dispatch, FC, SetStateAction, useState } from "react";
 
 export type CSVType = 'schedule' | 'preferences' | 'individual';
 
-export interface CSVInput {
+export type ScheduleRowType = {
+    subject: string;
+    specialization: string;
+    type: string;
+    "": number;
+    group_id: number;
+    teacher: string;
+    classroom: string;
+    week: string;
+    day: string;
+    start_time: string;
+}
+
+export type PreferencesRowType = {
+    student_id: string,
+    subject: string,
+    group_id: number, 
+    preference: number
+}
+
+export type IndividualRowType = {
+    "": string; // This is student_id
+} & Record<string, number>;
+
+export interface CSVInput<RowType> {
     type: CSVType;
-    csvData: any[];
+    csvData: RowType[];
+}
+
+type IndividualType = {
+    fitness: number;
+    individual: CSVInput<IndividualRowType>;
 }
 
 export interface DataContext {
-    schedule?: CSVInput;
-    setSchedule: Dispatch<SetStateAction<CSVInput | undefined>>;
+    schedule?: CSVInput<ScheduleRowType>;
+    setSchedule: Dispatch<SetStateAction<CSVInput<ScheduleRowType> | undefined>>;
 
-    preferences?: CSVInput;
-    setPreferences: Dispatch<SetStateAction<CSVInput | undefined>>;
+    preferences?: CSVInput<PreferencesRowType>;
+    setPreferences: Dispatch<SetStateAction<CSVInput<PreferencesRowType> | undefined>>;
 
-    individual?: CSVInput;
-    setIndividual: Dispatch<SetStateAction<CSVInput | undefined>>;
+    individual?: IndividualType;
+    setIndividual: Dispatch<SetStateAction<IndividualType | undefined>>;
 }
 
 export const DataContext = createContext<DataContext>({
@@ -34,9 +63,9 @@ interface ContextProviderProps {
 }
 
 const ContextProvider: FC<ContextProviderProps> = ({ children }) => {
-    const [schedule, setSchedule] = useState<CSVInput | undefined>(undefined);
-    const [preferences, setPreferences] = useState<CSVInput | undefined>(undefined);
-    const [individual, setIndividual] = useState<CSVInput | undefined>(undefined);
+    const [schedule, setSchedule] = useState<CSVInput<ScheduleRowType> | undefined>(undefined);
+    const [preferences, setPreferences] = useState<CSVInput<PreferencesRowType> | undefined>(undefined);
+    const [individual, setIndividual] = useState<IndividualType | undefined>(undefined);
 
     return (
         <DataContext.Provider value={{

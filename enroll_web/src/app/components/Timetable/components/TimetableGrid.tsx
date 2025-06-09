@@ -1,4 +1,4 @@
-import React, {Fragment, Dispatch, SetStateAction, FC} from "react";
+import React, {Fragment, FC} from "react";
 
 import { Lesson, LessonsList } from "../interfaces/Lesson";
 import LessonCell from "./TimetableLessonCell";

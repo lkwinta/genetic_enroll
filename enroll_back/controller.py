@@ -19,7 +19,7 @@ if ray.is_initialized():
 ray.init(num_cpus=8)
 service = Service()
 
-@app.route("/settings", methods=["POST"])
+@app.route("/upload/settings", methods=["POST"])
 def process_settings():
     data = request.json
 
@@ -105,25 +105,38 @@ def start_evolution():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/download/best', methods=['GET'])
-def download_best_individual():
+@app.route('/get_best', methods=['GET'])
+def get_best():
     try:
         best = service.get_best()
-        if not best['individual']:
+        if best['individual'] is None:
             return jsonify({"error": "No best individual found"}), 404
     
-        return jsonify(best), 200
+        return jsonify({
+            "individual": {
+                "type": "individual",
+                "csvString": best['individual'].to_csv(),
+            },
+            "fitness": best['fitness'],
+        }), 200
     except Exception as e:
+        print(e)
         return jsonify({"error": str(e)}), 500
     
-@app.route('/download/current_best', methods=['GET'])
-def download_current_best():
+@app.route('/get_current_best', methods=['GET'])
+def get_current_best():
     try:
         current_best = service.get_current_best()
-        if not current_best['individual']:
+        if current_best['individual'] is None:
             return jsonify({"error": "No current best individual found"}), 404
         
-        return jsonify(current_best), 200
+        return jsonify({
+            "individual": {
+                "type": "individual",
+                "csvString": current_best['individual'].to_csv(),
+            },
+            "fitness": current_best['fitness'],
+        }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
@@ -144,11 +157,11 @@ def get_history():
         return jsonify({"error": str(e)}), 500
     
 
-@app.route('/score', methods=['GET'])
-def score_per_student():
+@app.route('/get_student_scores', methods=['GET'])
+def get_student_scores():
     try:
         scores = service.score_per_student()
-        return jsonify(scores), 200
+        return jsonify({"scores": scores}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

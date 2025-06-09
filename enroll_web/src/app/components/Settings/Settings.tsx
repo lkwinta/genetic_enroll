@@ -13,25 +13,10 @@ import FitnessFunctionSettingsSection from './FitnessFunctionSettingsSection';
 import PerformanceSettingsSection from './PerformanceSettingsSection';
 
 import './styles/settings.css';
-import { AlgorithmSettingsState, FitnessFunctionSettingsState, PerformanceSettingsState } from './interfaces/AlgorithmSettings';
+import { AlgorithmSettingsState, FitnessFunctionSettingsState, PerformanceSettingsState, SettingsState } from './interfaces/AlgorithmSettings';
 import { DataContext } from '@/app/utils/ContextManager';
-import {useRouter} from "next/navigation";
-
-async function sendToBackend(endpoint: string, json?: string) : Promise<string> {
-    const response = await fetch(`http://localhost:5000/${endpoint}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: json,
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to send data to ${endpoint}: ${response.statusText}`);
-    }
-
-    return response.json();
-}
+import { useRouter } from "next/navigation";
+import { sendToBackend } from '@/app/utils/BackendController';
 
 const Settings: React.FC = () => {
     const router = useRouter();
@@ -78,16 +63,16 @@ const Settings: React.FC = () => {
         }
 
         setIsRunning(true);
-        const settings = {
+        const settings: SettingsState = {
             algorithmSettings,
             fitnessFunctionSettings,
             performanceSettings
         };
 
         try {
-            await sendToBackend('settings', JSON.stringify(settings));
-            await sendToBackend('upload/schedule', JSON.stringify(schedule));
-            await sendToBackend('upload/preferences', JSON.stringify(preferences));
+            await sendToBackend('upload/settings', settings);
+            await sendToBackend('upload/schedule', schedule);
+            await sendToBackend('upload/preferences', preferences);
             await sendToBackend('start_evolution')
 
             router.push('/pages/results');

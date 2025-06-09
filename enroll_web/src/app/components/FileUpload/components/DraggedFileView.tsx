@@ -1,14 +1,14 @@
-import { FC, JSX } from "react";
+import { JSX } from "react";
 import { AlertCircle, Check, X, File } from "lucide-react";
 import { FileObject } from "../interfaces/File";
 
-interface DraggedFileViewProps {
-  file?: FileObject;
-  onFileChange: (file?: FileObject) => void;
+interface DraggedFileViewProps<RowType> {
+  file?: FileObject<RowType>;
+  onFileChange: (file?: FileObject<RowType>) => void;
 }
 
-const DraggedFileView: FC<DraggedFileViewProps> = ({ file, onFileChange }) => {
-  const getStatusColor = (status: FileObject['status']): string => {
+const DraggedFileView = <RowType, >({ file, onFileChange } : DraggedFileViewProps<RowType>) => {
+  const getStatusColor = (status: FileObject<RowType>['status']): string => {
     switch (status) {
       case 'success': return 'text-green-600 dark:text-green-400';
       case 'error': return 'text-red-600 dark:text-red-400';
@@ -17,7 +17,7 @@ const DraggedFileView: FC<DraggedFileViewProps> = ({ file, onFileChange }) => {
     }
   };
 
-  const getStatusIcon = (status: FileObject['status']): JSX.Element => {
+  const getStatusIcon = (status: FileObject<RowType>['status']): JSX.Element => {
     switch (status) {
       case 'success': return <Check size={16} />;
       case 'error': return <AlertCircle size={16} />;
@@ -26,7 +26,7 @@ const DraggedFileView: FC<DraggedFileViewProps> = ({ file, onFileChange }) => {
     }
   };
 
-  const getStatusText = (status: FileObject['status']): string => {
+  const getStatusText = (status: FileObject<RowType>['status']): string => {
     switch (status) {
       case 'uploading': return 'Processing...';
       case 'success': return 'Processed';

@@ -1,10 +1,10 @@
 export type FileStatus = 'ready' | 'uploading' | 'success' | 'error';
 
-export interface FileObject {
+export interface FileObject<RowType> {
     file: File;
     name: string;
     size: string;
     status: FileStatus;
-    data?: any[];
+    data?: RowType[];
     error?: string;
 }

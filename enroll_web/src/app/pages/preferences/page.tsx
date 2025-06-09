@@ -3,13 +3,13 @@
 import React, { useContext } from "react";
 import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
-import { FilesContext } from "@/app/utils/ContextManager";
 import { parsePreferencesIntoLessons } from "@/app/utils/TimetableParser";
+import { DataContext } from "@/app/utils/ContextManager";
 
 const TimetablePage: NextPage = () => {
-    const { preferencesFile } = useContext(FilesContext);
+    const { preferences } = useContext(DataContext);
 
-    if (!preferencesFile) {
+    if (!preferences) {
         return (
             <div className="p-6 max-w-8xl mx-auto">
                 <h1 className="text-2xl font-bold">No preferences file uploaded</h1>
@@ -18,13 +18,13 @@ const TimetablePage: NextPage = () => {
         );
     }
 
-    const { lessons, subjectColorMap } = parsePreferencesIntoLessons(preferencesFile);
+    const { lessons } = parsePreferencesIntoLessons(preferences);
 
     return (
         <Timetable
             lessons={lessons}
             header="Preferences"
-            coloringFunction={(lesson) => 'teal'}
+            coloringFunction={() => 'teal'}
         />
     );
 }
