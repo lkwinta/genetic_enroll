@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ComposedChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label, Legend, Area } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label} from 'recharts';
 import SettingsSliderInput from '../../Settings/components/SettingsSliderInput';
 
 import '@/app/components/Settings/styles/settings.css';
@@ -62,7 +62,7 @@ const AlgorithmScoresHistogram: React.FC<AlgorithmScoresHistogramProps> = ({ sco
             
             {scores && scores.length > 0 ? (
                 <ResponsiveContainer width={'100%'} height={'100%'}>
-                    <ComposedChart data={scoresArray} margin={{ right: 12, bottom: 12 }}>
+                    <BarChart data={scoresArray} margin={{ right: 12, bottom: 12 }}>
                         <Bar 
                             dataKey={"count"}
                             fill={barColor}
@@ -91,7 +91,7 @@ const AlgorithmScoresHistogram: React.FC<AlgorithmScoresHistogramProps> = ({ sco
                         </YAxis>
                         <CartesianGrid stroke={gridColor} />
                         <Tooltip contentStyle={tooltipStyle}/>
-                    </ComposedChart>
+                    </BarChart>
                 </ResponsiveContainer>
             ) : (
                 <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
