@@ -39,6 +39,7 @@ const LessonCard: React.FC<LessonCardProps> = ({ lesson, colorClass = 'teal', en
                     <div className='points-capacity'>{lesson.pointsPerCapacity!.toFixed(2)}</div>
                 </div>) 
             }
+            {lesson.preference && <div className="preference"> {lesson.preference}</div>}
         </button>
     )
 };

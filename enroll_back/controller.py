@@ -164,6 +164,15 @@ def get_student_scores():
         return jsonify({"scores": scores}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@app.route('/get_subject_scores', methods=['GET'])
+def get_subject_scores():
+    try:
+        scores = service.fitness_per_subject()
+        return jsonify({"scores": scores}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=5000)
