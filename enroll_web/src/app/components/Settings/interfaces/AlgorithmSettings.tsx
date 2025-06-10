@@ -1,7 +1,7 @@
 import {Dispatch, SetStateAction} from 'react';
 
-export type MutationType = 'A' | 'B';
-export type CrossoverType = 'A' | 'B'; 
+export type MutationType = 'swap' | 'chain_swap';
+export type CrossoverType = 'split' | 'fill';
 export type SelectionType = 'truncation' | 'tournament';
 
 export interface AlgorithmSettingsState {

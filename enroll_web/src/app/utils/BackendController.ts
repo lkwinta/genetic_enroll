@@ -4,7 +4,7 @@ import { StudentScore } from "../components/AlgorithmResult/components/Algorithm
 import { SettingsState } from "../components/Settings/interfaces/AlgorithmSettings";
 import { CSVInput, PreferencesRowType, ScheduleRowType } from "./ContextManager";
 
-const BACKEND_URL = 'http://localhost:5000';
+const BACKEND_URL = 'http://127.0.01:5000';
 
 export type PostEndpoint = 'upload/settings' | 'upload/schedule' | 'upload/preferences' | 'start_evolution';
 export type GetEndpoint = 'get_student_scores' | 'get_progress' | 'get_history' | 'get_best' | 'get_current_best';

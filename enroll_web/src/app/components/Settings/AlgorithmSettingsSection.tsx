@@ -1,6 +1,12 @@
 import React, {FC, Dispatch, SetStateAction} from "react";
 
-import { AlgorithmSettingsState, updateSettingFactory, MutationType, SelectionType } from "./interfaces/AlgorithmSettings";
+import {
+  AlgorithmSettingsState,
+  updateSettingFactory,
+  MutationType,
+  SelectionType,
+  CrossoverType
+} from "./interfaces/AlgorithmSettings";
 import SettingsSection from "./components/SettingsSection";
 import NumberInput from "./components/SettingsNumberInput";
 import { Zap } from "lucide-react";
@@ -31,8 +37,8 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         <Dropdown
           label="Mutation Type"
           options={[
-            { value: 'A', label: 'Type A' },
-            { value: 'B', label: 'Type B' },
+            { value: 'swap', label: 'Swap' },
+            { value: 'chain_swap', label: 'Chain Swap' },
           ]}
           value={settings.mutationType}
           onChange={(value) => updateSetting('mutationType', value as MutationType)}
@@ -41,11 +47,11 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         <Dropdown
           label="Crossover Type"
           options={[
-            { value: 'A', label: 'Type A' },
-            { value: 'B', label: 'Type B' },
+            { value: 'split', label: 'Split' },
+            { value: 'fill', label: 'Fill' },
           ]}
           value={settings.crossoverType}
-          onChange={(value) => updateSetting('crossoverType', value as MutationType)}
+          onChange={(value) => updateSetting('crossoverType', value as CrossoverType)}
           description="Type of crossover applied between parents"
         />
       </div>

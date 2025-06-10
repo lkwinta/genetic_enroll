@@ -21,10 +21,10 @@ import { sendToBackend } from '@/app/utils/BackendController';
 const Settings: React.FC = () => {
     const router = useRouter();
     const defaultAlgorithmSettings: AlgorithmSettingsState = {
-        mutationType: "A",
-        crossoverType: "B",
+        mutationType: "swap",
+        crossoverType: "split",
 
-        generationsCount: 1000,
+        generationsCount: 50,
         populationSize: 100,
 
         earlyStoppingEnabled: true,
@@ -62,6 +62,8 @@ const Settings: React.FC = () => {
             return;
         }
 
+        console.info("Schedule file or preferences file is not set");
+
         setIsRunning(true);
         const settings: SettingsState = {
             algorithmSettings,
@@ -79,7 +81,9 @@ const Settings: React.FC = () => {
         } catch (error: unknown) {
             console.log("Error sending data to backend:", (error as Error).message);
             setIsRunning(false);
-        } 
+        }
+
+        console.info("Schedule file or preferences file is not set");
     };
 
     const resetSettings = () => {

@@ -1,11 +1,10 @@
-import io
-
-import ray
-from flask import request, jsonify, Flask, send_file
-from flask_cors import CORS
-from service import Service
-
 import pandas as pd
+import ray
+from flask import request, jsonify, Flask
+from flask_cors import CORS
+
+from enroll_back.service import to_remote
+from service import Service
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
@@ -65,6 +64,9 @@ def set_settings(settings):
         for k, v in settings.get("performanceSettings").items()
     }
 
+    thread_count = performance_settings.get("thread_count", 1)
+    to_remote(thread_count)
+
 @app.route('/upload/schedule', methods=['POST'])
 def upload_schedule():
     schedule_json = request.get_json()
@@ -85,7 +87,7 @@ def upload_preferences():
     preferences_json = request.get_json()
     if 'type' not in preferences_json or preferences_json['type'] != 'preferences':
         return jsonify({"error": "Invalid preferences type"}), 400
-    
+
     df = pd.DataFrame(preferences_json['csvData'])
 
     try:
@@ -111,7 +113,7 @@ def get_best():
         best = service.get_best()
         if best['individual'] is None:
             return jsonify({"error": "No best individual found"}), 404
-    
+
         return jsonify({
             "individual": {
                 "type": "individual",
@@ -120,7 +122,6 @@ def get_best():
             "fitness": best['fitness'],
         }), 200
     except Exception as e:
-        print(e)
         return jsonify({"error": str(e)}), 500
     
 @app.route('/get_current_best', methods=['GET'])
@@ -129,7 +130,7 @@ def get_current_best():
         current_best = service.get_current_best()
         if current_best['individual'] is None:
             return jsonify({"error": "No current best individual found"}), 404
-        
+
         return jsonify({
             "individual": {
                 "type": "individual",
@@ -139,7 +140,7 @@ def get_current_best():
         }), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 @app.route('/get_progress', methods=['GET'])
 def get_progress():
     try:
@@ -155,7 +156,7 @@ def get_history():
         return jsonify({"history": history_data}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 @app.route('/get_student_scores', methods=['GET'])
 def get_student_scores():

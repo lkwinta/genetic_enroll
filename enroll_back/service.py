@@ -7,7 +7,7 @@ import pandas as pd
 import ray
 
 class Service:
-    def __init__(self):
+    def __init__(self, thread_count=1):
         self.plan = None
         self.pref = None
 
@@ -49,6 +49,12 @@ class Service:
         self.best_individual = None
         self.best_fitness = None
         self.history = None
+
+        self.epochs_total = None
+        self.epochs_current = None
+        self.status = "not_started"
+
+
 
     def load_schedule(self, schedule_df):
         self.plan = schedule_df.copy()
@@ -135,10 +141,11 @@ class Service:
         Wybiera osobników do krzyżowania na podstawie turniejowej selekcji.
         """
         selected = []
-        population_scores = list(enumerate(zip(population, scores)))
+        population_scores = list(zip(population, scores))
 
         for _ in range(int(len(population) * elitism_rate)):
-            tournament = random.sample(population_scores, tournament_size)
+            enumerated = list(enumerate(population_scores))
+            tournament = random.sample(enumerated, tournament_size)
             tournament.sort(key=lambda x: x[1][1], reverse=True)
             index, winner = tournament[0]
             selected.append(winner[0])
@@ -146,7 +153,6 @@ class Service:
             population_scores.pop(index)
 
         return selected
-    
 
     def selection_truncation(self, population, scores, elitism_rate):
         """
@@ -218,24 +224,30 @@ class Service:
                     print("Early stopping triggered due to stagnation.")
                     break
 
-            elite_population = self.selection_truncation(
-                population, scores, elitism_rate
-            ) if selection_type == "truncation" else self.selection_tournament(
-                population, scores, tournament_size, elitism_rate
-            )
+            if selection_type == "truncation":
+                elite_population = self.selection_truncation(population, scores, elitism_rate)
+            elif selection_type == "tournament":
+                elite_population = self.selection_tournament(population, scores, tournament_size, elitism_rate)
 
             new_population = []
 
             while len(new_population) + len(elite_population) < population_size:
                 p1 = random.choice(elite_population)
                 p2 = random.choice(elite_population)
-                # child = crossover_type(p1, p2)
-                # child = mutation_type( child, mutation_rate
-                # )
-                child = crossover_fill.remote(self.schedule_dict_ref, p1, p2)
-                child = mutate_swap.remote(
-                    self.students_ref, self.schedule_dict_ref, child, mutation_rate
-                )
+
+                if random.random() < crossover_rate:
+                    if crossover_type == "split":
+                        child = crossover_split.remote(p1, p2, len(p1) // 2)
+                    elif crossover_type == "fill":
+                        child = crossover_fill.remote(self.schedule_dict_ref, p1, p2)
+                else:
+                    child = p1.copy()
+
+                if mutation_type == "swap":
+                    child = mutate_swap.remote(self.students_ref, self.schedule_dict_ref, child, mutation_rate)
+                # elif mutation_type == "chain_swap":
+                #     child = mutate_chain_swap.remote(self.students_ref, self.schedule_dict_ref, child, mutation_rate)
+
                 new_population.append(child)
 
             population = ray.get(new_population)
@@ -313,8 +325,8 @@ class Service:
             })
         return scores
 
-@ray.remote
-def generate_individual(
+
+def generate_individual_(
     plan, schedule_dict, num_groups, students, subjects, cap_dict
 ):
     """
@@ -404,9 +416,9 @@ def generate_individual(
             reserved[student][schedule_dict[(subject, group_id)]] += 1
     return df
 
-@ray.remote
-def mutate_swap(
-    students, schedule_dict, individual, mutation_rate=0.1, max_attempts=50
+
+def mutate_swap_(
+    students, schedule_dict, individual, mutation_rate, max_attempts=50
 ):
     mutated = individual.copy()
     reserved = {stu: Counter() for stu in students}
@@ -452,8 +464,7 @@ def mutate_swap(
                     break
     return mutated
 
-@ray.remote
-def crossover_split(parent1, parent2, cut):
+def crossover_split_(parent1, parent2, cut):
     """
     Krzyżuje dwóch osobników i zwraca nowego.
 
@@ -473,8 +484,8 @@ def crossover_split(parent1, parent2, cut):
 
     return child
 
-@ray.remote
-def crossover_fill(schedule_dict, parent1, parent2):
+
+def crossover_fill_(schedule_dict, parent1, parent2):
     """
     Krzyżuje dwóch osobników i zwraca nowego.
 
@@ -512,8 +523,8 @@ def crossover_fill(schedule_dict, parent1, parent2):
 
     return child
 
-@ray.remote
-def fitness(pref, individual, pref_dict):
+
+def fitness_(pref, individual, pref_dict):
     total_points = 0
     max_points = pref.groupby(["student_id", "subject"])["preference"].max().sum()
 
@@ -526,3 +537,19 @@ def fitness(pref, individual, pref_dict):
             total_points += points
 
     return float(round(total_points / max_points, 2))
+
+
+generate_individual = ray.remote(num_cpus=1)(generate_individual_)
+mutate_swap = ray.remote(num_cpus=1)(mutate_swap_)
+crossover_split = ray.remote(num_cpus=1)(crossover_split_)
+crossover_fill = ray.remote(num_cpus=1)(crossover_fill_)
+fitness = ray.remote(num_cpus=1)(fitness_)
+
+def to_remote(thread_count=1):
+    global generate_individual, mutate_swap, crossover_split, fitness
+    generate_individual = ray.remote(num_cpus=thread_count)(generate_individual_)
+    # mutate_chain_swap = ray.remote(num_cpus=thread_count)(mutate_chain_swap_)
+    mutate_swap = ray.remote(num_cpus=thread_count)(mutate_swap_)
+    crossover_split = ray.remote(num_cpus=thread_count)(crossover_split_)
+    crossover_fill = ray.remote(num_cpus=thread_count)(crossover_fill_)
+    fitness = ray.remote(num_cpus=thread_count)(fitness_)
