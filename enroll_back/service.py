@@ -324,6 +324,32 @@ class Service:
                 "max_score": int(student_max),
             })
         return scores
+    
+    def fitness_per_subject(self):
+        subject_scores = defaultdict(float)
+        subject_max = defaultdict(float)
+
+        max_points = self.pref.groupby(["student_id", "subject"])["preference"].max().reset_index()
+
+        for _, row in max_points.iterrows():
+            subject = row['subject']
+            subject_max[subject] += row['preference']
+
+        for student in self.best_individual.index:
+            for subject in self.best_individual.columns:
+                group = self.best_individual.loc[student, subject]
+                key = (student, subject, group)
+                points = self.pref_dict.get(key, 0)
+
+                subject_scores[subject] += points
+
+        fitness_per_subject = [
+            {"subject": subject, "fitness": round(subject_scores[subject] / subject_max[subject], 2)}
+            if subject_max[subject] > 0 else 1.0
+            for subject in subject_scores
+        ]
+
+        return fitness_per_subject
 
 
 def generate_individual_(

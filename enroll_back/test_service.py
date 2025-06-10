@@ -17,8 +17,8 @@ service.load_preferences(preferences)
 service.generate_population(1000)
 
 print(service.evolve(
-    max_generations=1000,
-    population_size=100,
+    max_generations=100,
+    population_size=10,
     mutation_rate=0.1,
     crossover_rate=0.9,
     elitism_rate=0.2,
@@ -29,3 +29,5 @@ print(service.evolve(
     mutation_type="gaussian",
     crossover_type="uniform",
 ))
+
+print(service.fitness_per_subject())

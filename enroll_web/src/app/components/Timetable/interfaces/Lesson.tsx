@@ -14,6 +14,8 @@ export interface Lesson {
   capacity?: number;
   pointsPerCapacity?: number;
   pointsAssigned?: number;
+  preference?: number;
+  assigned?: boolean;
 }
 
 export interface LessonsList {

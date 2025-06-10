@@ -100,15 +100,13 @@ const parseStudentsPreferences = (csv: CSVInput<PreferencesRowType>) => {
 }
 
 const parseStudentPreferences = (csv: CSVInput<PreferencesRowType>, student: string) => {
-    const studentPreferencesMap: Record<string, number> = {};
+    const studentPreferencesMap: Map<[string, number], number> = new Map();
 
     if (csv.type != 'preferences') return studentPreferencesMap;
 
     csv.csvData.forEach((row) => {
         if (row.student_id === student) {
-            const id = `${row.subject}-${row.group_id}`;
-
-            studentPreferencesMap[id] = row.preference;
+            studentPreferencesMap.set([row.subject, row.group_id], row.preference);
         }
     })
 

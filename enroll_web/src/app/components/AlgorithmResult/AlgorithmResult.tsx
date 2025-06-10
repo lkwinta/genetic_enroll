@@ -8,6 +8,8 @@ import { CSVType, DataContext, IndividualRowType, IndividualType } from '@/app/u
 import Papa from 'papaparse';
 import { FitnessHistory } from './components/AlgorithmFitnessPlot';
 import { StudentScore } from './components/AlgorithmScoresHistogram';
+import { SubjectScore } from './components/AlgorithmSubjectScoresPlot';
+import AlgorithmSubjectScores from './AlgorithmSubjectScores';
 
 const AlgorithmResult: React.FC = () => {
     const [progress, setProgress] = useState<Progress>({
@@ -15,7 +17,8 @@ const AlgorithmResult: React.FC = () => {
         current_epochs: 0,
         total_epochs: 0
     });
-    const [scores, setScores] = useState<StudentScore[] | undefined>(undefined);
+    const [studentScores, setStudentScores] = useState<StudentScore[] | undefined>(undefined);
+    const [subjectScores, setSubjectScores] = useState<SubjectScore[] | undefined>(undefined);
     const [fitnessHistory, setFitnessHistory] = useState<FitnessHistory>([]);
     const [error, setError] = useState<string | null>(null);
     const [ready, setReady] = useState<boolean>(false);
@@ -53,8 +56,12 @@ const AlgorithmResult: React.FC = () => {
     useEffect(() => {
         if (!ready) return;
         fetchFromBackend("get_student_scores")
-            .then(data => setScores(data.scores))
+            .then(data => setStudentScores(data.scores))
             .catch(err => setError(`Failed to fetch scores: ${err.message}`));
+
+        fetchFromBackend("get_subject_scores")
+            .then(data => setSubjectScores(data.scores))
+            .catch(err => setError(`Failed to fetch subject scores: ${err.message}`));
 
         fetchIndividualData()
             .then(setIndividual)
@@ -70,7 +77,8 @@ const AlgorithmResult: React.FC = () => {
                 </div>
             )}
             <AlgorithmStatus progress={progress} fitnessHistory={fitnessHistory} viewButton={ready}/>
-            {ready && <AlgorithmScoreResults scores={scores} />}
+            {ready && <AlgorithmSubjectScores scores={subjectScores} />}
+            {ready && <AlgorithmScoreResults scores={studentScores} />}
         </div>
     );
 };

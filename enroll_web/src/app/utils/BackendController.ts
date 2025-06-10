@@ -1,13 +1,14 @@
 import { Progress } from "../components/AlgorithmResult/AlgorithmStatus";
 import { FitnessHistory } from "../components/AlgorithmResult/components/AlgorithmFitnessPlot";
 import { StudentScore } from "../components/AlgorithmResult/components/AlgorithmScoresHistogram";
+import { SubjectScore } from "../components/AlgorithmResult/components/AlgorithmSubjectScoresPlot";
 import { SettingsState } from "../components/Settings/interfaces/AlgorithmSettings";
 import { CSVInput, PreferencesRowType, ScheduleRowType } from "./ContextManager";
 
 const BACKEND_URL = 'http://127.0.01:5000';
 
 export type PostEndpoint = 'upload/settings' | 'upload/schedule' | 'upload/preferences' | 'start_evolution';
-export type GetEndpoint = 'get_student_scores' | 'get_progress' | 'get_history' | 'get_best' | 'get_current_best';
+export type GetEndpoint = 'get_student_scores' | 'get_progress' | 'get_history' | 'get_best' | 'get_current_best' | 'get_subject_scores';
 
 type PostEndpointToModel = {
     'upload/settings': SettingsState;
@@ -22,6 +23,7 @@ type GetEndpointToModel = {
     'get_history': { history: FitnessHistory };
     'get_best': { fitness: number, individual: {type: string, csvString: string} };
     'get_current_best': { fitness: number, individual: {type: string, csvString: string} };
+    'get_subject_scores': { scores: SubjectScore[] };
 }
 
 type BackendPostResponse = {

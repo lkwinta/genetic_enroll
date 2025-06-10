@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';
 import SettingsSliderInput from '../../Settings/components/SettingsSliderInput';
 
 import '@/app/components/Settings/styles/settings.css';
@@ -50,58 +50,57 @@ const AlgorithmScoresHistogram: React.FC<AlgorithmScoresHistogramProps> = ({ sco
 
     return (
         <>
-            <SettingsSliderInput 
+            <SettingsSliderInput
                 label="Bin Width"
-                value={binWidth} 
-                onChange={(value) => {setBinWidth(value)}}
+                value={binWidth}
+                onChange={(value) => { setBinWidth(value) }}
                 min={1}
                 max={maxWidth}
                 step={1}
             />
-             <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 pt-10 h-110 border border-gray-200 dark:border-gray-600">
-            
-            {scores && scores.length > 0 ? (
-                <ResponsiveContainer width={'100%'} height={'100%'}>
-                    <BarChart data={scoresArray} margin={{ right: 12, bottom: 12 }}>
-                        <Bar 
-                            dataKey={"count"}
-                            fill={barColor}
-                        />
-                        <XAxis 
-                            dataKey="score" 
-                            stroke={textColor} 
-                            type="category">
-                            <Label 
-                                value="Scores"
-                                offset={-10}
-                                fill={textColor}
-                                style={{ fontSize: '14px' }}
-                                position={"insideBottom"}
+            <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 pt-10 h-110 border border-gray-200 dark:border-gray-600">
+                {scores && scores.length > 0 ? (
+                    <ResponsiveContainer width={'100%'} height={'100%'}>
+                        <BarChart data={scoresArray} margin={{ right: 12, bottom: 12 }}>
+                            <Bar
+                                dataKey={"count"}
+                                fill={barColor}
                             />
-                        </XAxis>
-                        <YAxis stroke={textColor} domain={[0, 'dataMax + 1']}>
-                            <Label 
-                                value="Students with Score"
-                                angle={-90}
-                                offset={10}
-                                fill={textColor}
-                                style={{ fontSize: '14px' }}
-                                position={"insideLeft"}
-                            />
-                        </YAxis>
-                        <CartesianGrid stroke={gridColor} />
-                        <Tooltip contentStyle={tooltipStyle}/>
-                    </BarChart>
-                </ResponsiveContainer>
-            ) : (
-                <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
-                    <div>
-                        <div className="text-lg mb-2">Fitness History Chart</div>
-                        <div className="text-sm">Chart will appear here when algorithm starts</div>
+                            <XAxis
+                                dataKey="score"
+                                stroke={textColor}
+                                type="category">
+                                <Label
+                                    value="Scores"
+                                    offset={-10}
+                                    fill={textColor}
+                                    style={{ fontSize: '14px' }}
+                                    position={"insideBottom"}
+                                />
+                            </XAxis>
+                            <YAxis stroke={textColor} domain={[0, 'dataMax + 1']}>
+                                <Label
+                                    value="Students with Score"
+                                    angle={-90}
+                                    offset={10}
+                                    fill={textColor}
+                                    style={{ fontSize: '14px' }}
+                                    position={"insideLeft"}
+                                />
+                            </YAxis>
+                            <CartesianGrid stroke={gridColor} />
+                            <Tooltip contentStyle={tooltipStyle} />
+                        </BarChart>
+                    </ResponsiveContainer>
+                ) : (
+                    <div className="flex items-center justify-center h-full text-center text-gray-500 dark:text-gray-400">
+                        <div>
+                            <div className="text-lg mb-2">Fitness History Chart</div>
+                            <div className="text-sm">Chart will appear here when algorithm starts</div>
+                        </div>
                     </div>
-                </div>
-            )}
-        </div>
+                )}
+            </div>
         </>
     );
 }
