@@ -13,6 +13,13 @@ const DAY_MAP: Record<string, string> = {
   Nd: 'Sunday',
 };
 
+const TYPE_TO_CAPACITY: Record<string, number> = {
+    "L": 15,
+    "P": 15,
+    "C": 30,
+    "W": 250
+}
+
 
 const normalizeHour = (timeStr: string): string => {
     const [hh, mm] = timeStr.split(":");
@@ -50,7 +57,7 @@ const parseScheduleIntoLessons = (csv: CSVInput<ScheduleRowType>) => {
             teacher: row.teacher,
             room: row.classroom,
             group_id: row.group_id,
-            // capacity: row.capacity, TODO:
+            capacity: TYPE_TO_CAPACITY[row.type] || 0,
             notes: `${row.type || ''} ${row.group_id || ''}`.trim(),
             day: dayKey as Day,
             timeSlot: slot,
@@ -72,18 +79,38 @@ const parseScheduleIntoLessons = (csv: CSVInput<ScheduleRowType>) => {
     }
 }
 
-const parsePreferencesIntoLessons = (csv: CSVInput<PreferencesRowType>)  => {
-    if (csv.type != 'preferences') return {};
+const parseStudentsPreferences = (csv: CSVInput<PreferencesRowType>) => {
+    const subjectPreferencesMap: Record<string, [number, number, number]> = {};
 
-    return {
-        lessons: {},
-        subjectColorMap: {}
-    }
+    csv.csvData.forEach((row) => {
+        const id = `${row.subject}-${row.group_id}`;
+        
+        if (!subjectPreferencesMap[id]) {
+            subjectPreferencesMap[id] = [0, 0, 0];
+        }
+        const [prevSum, prevMax, maxCount] = subjectPreferencesMap[id];
+        subjectPreferencesMap[id] = [
+            prevSum + row.preference, 
+            prevMax + 10, 
+            maxCount + (row.preference === 10 ? 1 : 0)
+        ];
+    })
+
+    return subjectPreferencesMap;
 }
 
-const parseStudentPreferences = (csv: CSVInput<PreferencesRowType>) => {
+const parseStudentPreferences = (csv: CSVInput<PreferencesRowType>, student: string) => {
+    const subjectPreferencesMap: Record<string, number> = {};
 
+    // csv.csvData.forEach((row) => {
+    //     const id = `${row.subject}-${row.group_id}`;
+    
+    //     subjectPreferencesMap[id] += row.preference || 0;
+    // })
+
+    return subjectPreferencesMap;
 }
+
 
 
 const parseIndividualIntoStudentsMap = (csv: CSVInput<IndividualRowType>)  => {
@@ -132,4 +159,4 @@ const parseIndividualIntoStudentsAssignments = (csv: CSVInput<IndividualRowType>
     return resultAssignments;
 }
 
-export { parseScheduleIntoLessons, parsePreferencesIntoLessons, parseIndividualIntoStudentsMap, parseStudentPreferences, parseIndividualIntoStudentsAssignments };
+export { parseScheduleIntoLessons, parseIndividualIntoStudentsMap, parseStudentsPreferences, parseIndividualIntoStudentsAssignments };

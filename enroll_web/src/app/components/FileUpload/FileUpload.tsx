@@ -68,7 +68,7 @@ const CSVFileUpload: React.FC<CSVFileUploadProps> = ({ setReady }) => {
                     description="Upload preferences CSV file"
                     file={preferencesFile}
                     onFileChange={setPreferencesFile}
-                    viewButtonEnabled={true}
+                    viewButtonEnabled={scheduleFile?.status === 'success'}
                     viewButtonOnClick={() => {
                         if (preferencesFile) {
                             router.push(`/pages/preferences`);
@@ -99,8 +99,6 @@ const parseFile = <RowType, >(
         });
 
         if (parseResult.errors.length === 0) {
-            console.log(parseResult.data);
-
             setFile((prev) => ({
                 ...prev!,
                 status: 'success',

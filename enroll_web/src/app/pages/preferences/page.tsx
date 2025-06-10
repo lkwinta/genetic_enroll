@@ -3,13 +3,14 @@
 import React, { useContext } from "react";
 import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
-import { parsePreferencesIntoLessons } from "@/app/utils/TimetableParser";
+import { parseScheduleIntoLessons, parseStudentsPreferences } from "@/app/utils/TimetableParser";
 import { DataContext } from "@/app/utils/ContextManager";
+import { Lesson, LessonsList } from "@/app/components/Timetable/interfaces/Lesson";
 
 const TimetablePage: NextPage = () => {
-    const { preferences } = useContext(DataContext);
+    const { schedule, preferences } = useContext(DataContext);
 
-    if (!preferences) {
+    if (!schedule || !preferences) {
         return (
             <div className="p-6 max-w-8xl mx-auto">
                 <h1 className="text-2xl font-bold">No preferences file uploaded</h1>
@@ -18,13 +19,33 @@ const TimetablePage: NextPage = () => {
         );
     }
 
-    const { lessons } = parsePreferencesIntoLessons(preferences);
+    const { lessons, subjectColorMap } = parseScheduleIntoLessons(schedule);
+    const preferencesMap = parseStudentsPreferences(preferences);
+
+    const lessonsWithPreferences = Object.fromEntries(
+        Object.entries(lessons).map(([timeSlot, lessonList]) =>
+            [
+                timeSlot,
+                lessonList.map(lesson => {
+                    const lesson_id = `${lesson.subject}-${lesson.group_id}`
+                    const [pointsAssigned, pointsMax, maxCount] = preferencesMap[lesson_id] || [0, 0, 0];
+                    return {
+                        ...lesson,
+                        pointsAssigned: pointsAssigned,
+                        pointsPerCapacity: (maxCount / (lesson.capacity || 1)),
+                    };
+                })
+            ]
+        )
+    );
 
     return (
         <Timetable
-            lessons={lessons}
+            lessons={lessonsWithPreferences}
             header="Preferences"
-            coloringFunction={() => 'teal'}
+            coloringFunction={(lesson) => {
+                return subjectColorMap[lesson.subject] || 'teal';
+            }}
         />
     );
 }

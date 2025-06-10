@@ -3,7 +3,7 @@
 import React, { useContext } from "react";
 import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
-import { parseIndividualIntoStudentsAssignments, parseStudentPreferences, parseScheduleIntoLessons } from "@/app/utils/TimetableParser";
+import { parseIndividualIntoStudentsAssignments, parseScheduleIntoLessons } from "@/app/utils/TimetableParser";
 import { DataContext } from "@/app/utils/ContextManager";
 import { Lesson } from "@/app/components/Timetable/interfaces/Lesson";
 

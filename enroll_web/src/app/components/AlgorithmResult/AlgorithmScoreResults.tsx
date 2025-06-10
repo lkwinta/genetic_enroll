@@ -3,12 +3,7 @@ import AlgorithmResultsSection from './components/AlgorithmResultsSection';
 import InfoCard from '../Settings/components/SettingsInfoCard';
 import { DataContext } from '@/app/utils/ContextManager';
 import { useRouter } from 'next/navigation';
-
-export type StudentScore = {
-    student: string;
-    score: number;
-    max_score: number;
-}
+import AlgorithmScoresHistogram, { StudentScore } from './components/AlgorithmScoresHistogram';
 
 export interface AlgorithmScoreResultsProps {
     scores?: StudentScore[];
@@ -29,6 +24,7 @@ const AlgorithmScoreResults: React.FC<AlgorithmScoreResultsProps> = ({ scores })
         <AlgorithmResultsSection
             title="Scores Per Student"
         >
+            <AlgorithmScoresHistogram scores={scores} />
             {sortedScores && sortedScores.length > 0 ? (
                 <>
                     <InfoCard 

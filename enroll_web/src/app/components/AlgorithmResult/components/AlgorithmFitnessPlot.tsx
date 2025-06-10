@@ -1,7 +1,12 @@
 import React, { useEffect, useRef } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label, Legend } from 'recharts';
 
-export type FitnessHistory = number[];
+export type FitnessHistory = {
+    generation: number;
+    max_fitness: number;
+    min_fitness: number;
+    avg_fitness: number;
+}[];
 
 export interface AlgorithmFitnessPlotProps {
     fitnessHistory?: FitnessHistory;
@@ -14,7 +19,9 @@ const AlgorithmFitnessPlot: React.FC<AlgorithmFitnessPlotProps> = ({ fitnessHist
         isDark.current = window.matchMedia("(prefers-color-scheme: dark)").matches;
     });
 
-    const lineColor = isDark.current ? 'rgb(96, 165, 250)' : 'rgb(59, 130, 246)';
+    const maxLineColor = isDark.current ? 'rgb(239, 68, 68)' : 'rgb(220, 38, 38)';
+    const minLineColor = isDark.current ? 'rgb(250, 204, 21)' : 'rgb(234, 179, 8)';
+    const avgLineColor = isDark.current ? 'rgb(34, 197, 94)' : 'rgb(22, 163, 74)';
     const textColor = isDark.current ? 'rgb(255, 255, 255)' : 'rgb(31, 41, 55)';
     const gridColor = isDark.current ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
     const tooltipStyle: React.CSSProperties = {
@@ -25,18 +32,30 @@ const AlgorithmFitnessPlot: React.FC<AlgorithmFitnessPlotProps> = ({ fitnessHist
     };
 
     return (
-        <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 h-100 border border-gray-200 dark:border-gray-600">
+        <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-4 h-110 border border-gray-200 dark:border-gray-600">
             {fitnessHistory && fitnessHistory.length > 0 ? (
                 <ResponsiveContainer width={'100%'} height={'100%'}>
-                    <LineChart data={fitnessHistory.map((fitness, index) => ({ epoch: index + 1, fitness }))} margin={{ top: 12, right: 12, bottom: 12 }}>
+                    <LineChart data={fitnessHistory} margin={{ right: 12, bottom: 12 }}>
                         <Line
                             type="monotone"
-                            dataKey="fitness"
-                            stroke={lineColor}
+                            dataKey="min_fitness"
+                            stroke={minLineColor}
+                            strokeWidth={2}
+                            dot={false}/>
+                        <Line
+                            type="monotone"
+                            dataKey="avg_fitness"
+                            stroke={avgLineColor}
+                            strokeWidth={2}
+                            dot={false}/>
+                        <Line
+                            type="monotone"
+                            dataKey="max_fitness"
+                            stroke={maxLineColor}
                             strokeWidth={2}
                             dot={false}/>
                         <XAxis 
-                            dataKey="epoch" 
+                            dataKey="generation" 
                             stroke={textColor} 
                             type="number"
                         >
@@ -60,6 +79,12 @@ const AlgorithmFitnessPlot: React.FC<AlgorithmFitnessPlotProps> = ({ fitnessHist
                         </YAxis>
                         <CartesianGrid stroke={gridColor} />
                         <Tooltip contentStyle={tooltipStyle}/>
+                        <Legend
+                            wrapperStyle={{ color: textColor }}
+                            iconType="line"
+                            formatter={(value: string) => <span style={{ color: textColor }}>{value}</span>}
+                            verticalAlign='top'
+                        />
                     </LineChart>
                 </ResponsiveContainer>
             ) : (
