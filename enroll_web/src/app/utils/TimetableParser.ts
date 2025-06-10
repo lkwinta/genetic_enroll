@@ -100,15 +100,19 @@ const parseStudentsPreferences = (csv: CSVInput<PreferencesRowType>) => {
 }
 
 const parseStudentPreferences = (csv: CSVInput<PreferencesRowType>, student: string) => {
-    const subjectPreferencesMap: Record<string, number> = {};
+    const studentPreferencesMap: Record<string, number> = {};
 
-    // csv.csvData.forEach((row) => {
-    //     const id = `${row.subject}-${row.group_id}`;
-    
-    //     subjectPreferencesMap[id] += row.preference || 0;
-    // })
+    if (csv.type != 'preferences') return studentPreferencesMap;
 
-    return subjectPreferencesMap;
+    csv.csvData.forEach((row) => {
+        if (row.student_id === student) {
+            const id = `${row.subject}-${row.group_id}`;
+
+            studentPreferencesMap[id] = row.preference;
+        }
+    })
+
+    return studentPreferencesMap;
 }
 
 
@@ -159,4 +163,4 @@ const parseIndividualIntoStudentsAssignments = (csv: CSVInput<IndividualRowType>
     return resultAssignments;
 }
 
-export { parseScheduleIntoLessons, parseIndividualIntoStudentsMap, parseStudentsPreferences, parseIndividualIntoStudentsAssignments };
+export { parseScheduleIntoLessons, parseIndividualIntoStudentsMap, parseStudentsPreferences, parseIndividualIntoStudentsAssignments, parseStudentPreferences};

@@ -13,7 +13,7 @@ const AlgorithmScoreResults: React.FC<AlgorithmScoreResultsProps> = ({ scores })
     const { setSelectedStudent } = useContext(DataContext);
     const router = useRouter();
     
-    let sortedScores = scores ? [...scores].sort((a, b) => b.score - a.score) : [];
+    const sortedScores = scores ? [...scores].sort((a, b) => b.score - a.score) : [];
 
     const handleScoreClick = (student: string) => {
         setSelectedStudent(student);

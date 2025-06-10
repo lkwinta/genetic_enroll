@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useContext, Dispatch, SetStateAction } from 'react';
-import AlgorithmScoreResults, { StudentScore } from './AlgorithmScoreResults';
+import React, { useEffect, useState, useRef, useContext} from 'react';
+import AlgorithmScoreResults from './AlgorithmScoreResults';
 import AlgorithmStatus, { Progress } from './AlgorithmStatus';
 import { fetchFromBackend } from '@/app/utils/BackendController';
 import { CSVType, DataContext, IndividualRowType, IndividualType } from '@/app/utils/ContextManager';
 import Papa from 'papaparse';
+import { FitnessHistory } from './components/AlgorithmFitnessPlot';
+import { StudentScore } from './components/AlgorithmScoresHistogram';
 
 const AlgorithmResult: React.FC = () => {
     const [progress, setProgress] = useState<Progress>({
@@ -14,7 +16,7 @@ const AlgorithmResult: React.FC = () => {
         total_epochs: 0
     });
     const [scores, setScores] = useState<StudentScore[] | undefined>(undefined);
-    const [fitnessHistory, setFitnessHistory] = useState<number[]>([]);
+    const [fitnessHistory, setFitnessHistory] = useState<FitnessHistory>([]);
     const [error, setError] = useState<string | null>(null);
     const [ready, setReady] = useState<boolean>(false);
     const { setIndividual } = useContext(DataContext);
@@ -57,7 +59,7 @@ const AlgorithmResult: React.FC = () => {
         fetchIndividualData()
             .then(setIndividual)
             .catch(err => setError(`Failed to fetch individual data: ${err.message}`));
-    }, [ready]);
+    }, [ready, setIndividual]);
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">

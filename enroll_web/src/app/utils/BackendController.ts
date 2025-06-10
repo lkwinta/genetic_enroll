@@ -1,6 +1,6 @@
-import { StudentScore } from "../components/AlgorithmResult/AlgorithmScoreResults";
 import { Progress } from "../components/AlgorithmResult/AlgorithmStatus";
 import { FitnessHistory } from "../components/AlgorithmResult/components/AlgorithmFitnessPlot";
+import { StudentScore } from "../components/AlgorithmResult/components/AlgorithmScoresHistogram";
 import { SettingsState } from "../components/Settings/interfaces/AlgorithmSettings";
 import { CSVInput, PreferencesRowType, ScheduleRowType } from "./ContextManager";
 

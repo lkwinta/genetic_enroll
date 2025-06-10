@@ -5,7 +5,6 @@ import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
 import { parseScheduleIntoLessons, parseStudentsPreferences } from "@/app/utils/TimetableParser";
 import { DataContext } from "@/app/utils/ContextManager";
-import { Lesson, LessonsList } from "@/app/components/Timetable/interfaces/Lesson";
 
 const TimetablePage: NextPage = () => {
     const { schedule, preferences } = useContext(DataContext);
@@ -28,7 +27,8 @@ const TimetablePage: NextPage = () => {
                 timeSlot,
                 lessonList.map(lesson => {
                     const lesson_id = `${lesson.subject}-${lesson.group_id}`
-                    const [pointsAssigned, pointsMax, maxCount] = preferencesMap[lesson_id] || [0, 0, 0];
+                    const pointsAssigned = preferencesMap[lesson_id][0] || 0;
+                    const maxCount = preferencesMap[lesson_id][2] || 0;
                     return {
                         ...lesson,
                         pointsAssigned: pointsAssigned,

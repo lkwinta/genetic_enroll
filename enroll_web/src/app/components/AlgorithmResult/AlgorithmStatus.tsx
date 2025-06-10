@@ -3,10 +3,7 @@
 import React from "react";
 import AlgorithmFitnessPlot, { FitnessHistory } from "./components/AlgorithmFitnessPlot";
 import AlgorithmResultsSection from "./components/AlgorithmResultsSection";
-import { CSVType, DataContext, IndividualRowType } from "@/app/utils/ContextManager";
-import { fetchFromBackend } from "@/app/utils/BackendController";
 import { useRouter } from "next/navigation";
-import Papa from "papaparse";
 
 type ProgressStatus = 'running' | 'finished' | 'unknown';
 
