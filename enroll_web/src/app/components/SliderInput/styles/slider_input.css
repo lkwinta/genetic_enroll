@@ -1,0 +1,27 @@
+@reference "../../../globals.css";
+
+.slider-label {
+    @apply flex justify-between items-center;
+}
+
+.slider-label label {
+    @apply text-sm font-medium;
+}
+
+.slider-label span {
+    @apply text-sm font-mono;
+}
+
+.slider-input {
+    @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer;
+}
+
+.slider-fill {
+  background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--percentage, 0%), #d1d5db var(--percentage, 0%), #d1d5db 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+    .slider-fill {
+        background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--percentage, 0%), #374151 var(--percentage, 0%), #374151 100%);
+    }
+}

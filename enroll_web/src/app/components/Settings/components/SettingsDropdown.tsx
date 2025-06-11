@@ -12,7 +12,7 @@ interface DropdownProps {
 
 const Dropdown: FC<DropdownProps> = ({ label, options, value, onChange, description }) => (
     <div className="space-y-2">
-        <label className="settings-dropdown settings-text-primary">
+        <label className="settings-dropdown text-primary">
             {label}
         </label>
         <select
@@ -27,7 +27,7 @@ const Dropdown: FC<DropdownProps> = ({ label, options, value, onChange, descript
             ))}
         </select>
         {description && (
-            <p className="text-xs settings-text-muted">{description}</p>
+            <p className="text-xs text-muted">{description}</p>
         )}
     </div>
 );

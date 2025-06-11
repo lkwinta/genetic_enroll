@@ -17,7 +17,7 @@ const SettingsSection: FC<SettingsSectionProps> = ({ title, icon, children, defa
     <div className="settings-section settings-bg-secondary settings-border">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="settings-text-primary hover:settings-bg-tertiary"
+        className="text-primary hover:settings-bg-tertiary"
       >
         <div className="flex items-center gap-3">
           {icon}

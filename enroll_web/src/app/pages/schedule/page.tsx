@@ -5,16 +5,14 @@ import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
 import { DataContext } from "@/app/utils/ContextManager";
 import { parseScheduleIntoLessons } from "@/app/utils/TimetableParser";
+import ErrorBanner from "@/app/components/Error/ErrorBanner";
 
 const TimetablePage: NextPage = () => {
     const { schedule } = useContext(DataContext);
 
     if (!schedule) {
         return (
-            <div className="p-6 max-w-8xl mx-auto">
-                <h1 className="text-2xl font-bold">No schedule file uploaded</h1>
-                <p>Please upload a schedule file to view the timetable.</p>
-            </div>
+            <ErrorBanner error="Schedule data is not available. Please ensure you have fetched the schedule." />
         );
     }
 

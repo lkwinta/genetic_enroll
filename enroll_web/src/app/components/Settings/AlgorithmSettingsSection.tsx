@@ -10,10 +10,10 @@ import {
 import SettingsSection from "./components/SettingsSection";
 import NumberInput from "./components/SettingsNumberInput";
 import { Zap } from "lucide-react";
-import SliderInput from "./components/SettingsSliderInput";
+import SliderInput from "@/app/components/SliderInput/SliderInput";
 import ToggleSwitch from "./components/SettingsToggleSwitch";
 import Dropdown from "./components/SettingsDropdown";
-import InfoCard from "./components/SettingsInfoCard";
+import InfoCard from "@/app/components/InfoCard/InfoCard";
 
 interface AlgorithmSettingsProps {
   settings: AlgorithmSettingsState;

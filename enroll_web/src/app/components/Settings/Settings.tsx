@@ -84,12 +84,12 @@ const Settings: React.FC = () => {
             {/* Header */}
             <div className="mb-8">
                 <div className="settings-header">
-                    <SettingsIcon className={`settings-text-primary `} size={32} />
-                    <h1 className="text-3xl font-bold settings-text-primary">
+                    <SettingsIcon className={`text-primary `} size={32} />
+                    <h1 className="text-3xl font-bold text-primary">
                         Genetic Algorithm Settings
                     </h1>
                 </div>
-                <p className="settings-text-secondary">
+                <p className="text-secondary">
                     Configure parameters for student assignment optimization with preferences
                 </p>
             </div>

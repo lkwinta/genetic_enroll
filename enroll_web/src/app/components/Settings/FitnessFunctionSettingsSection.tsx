@@ -4,8 +4,8 @@ import { FitnessFunctionSettingsState, updateSettingFactory } from "./interfaces
 import { Target } from "lucide-react";
 
 import SettingsSection from "./components/SettingsSection";
-import InfoCard from "./components/SettingsInfoCard";
-import SliderInput from "./components/SettingsSliderInput";
+import InfoCard from "@/app/components/InfoCard/InfoCard";
+import SliderInput from "@/app/components/SliderInput/SliderInput";
 
 interface FitnessFunctionSettingsProps {
   settings: FitnessFunctionSettingsState;
@@ -56,7 +56,7 @@ const FitnessFunctionSettingsSection: FC<FitnessFunctionSettingsProps> = ({ sett
             
             <div className={`p-3 rounded-lg settings-bg-tertiary`}>
               <div className="flex items-center justify-between">
-                <span className={`text-sm font-medium settings-text-secondary`}>
+                <span className={`text-sm font-medium text-secondary`}>
                   Total Weight:
                 </span>
                 <span className={`text-sm font-bold ${

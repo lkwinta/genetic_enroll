@@ -6,16 +6,16 @@ import Timetable from "@/app/components/Timetable/Timetable";
 import { parseIndividualIntoStudentsAssignments, parseScheduleIntoLessons, parseStudentPreferences } from "@/app/utils/TimetableParser";
 import { DataContext } from "@/app/utils/ContextManager";
 import { Lesson, LessonsList } from "@/app/components/Timetable/interfaces/Lesson";
+import ErrorBanner from "@/app/components/Error/ErrorBanner";
 
 const StudentPage: NextPage = () => {
     const { preferences, schedule, individual, selectedStudent } = useContext(DataContext);
 
     if (!preferences || !schedule || !individual || !selectedStudent) {
         return (
-            <div className="p-6 max-w-8xl mx-auto">
-                <h1 className="text-2xl font-bold">No preferences file uploaded</h1>
-                <p>Please upload a preference file to view the timetable.</p>
-            </div>
+            <ErrorBanner
+                error="Preferences, schedule, individual data or selected student is not available. Please ensure you have fetched the necessary data."
+            />
         );
     }
 

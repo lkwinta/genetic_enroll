@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import AlgorithmResultsSection from './components/AlgorithmResultsSection';
-import InfoCard from '../Settings/components/SettingsInfoCard';
+import InfoCard from '@/app/components/InfoCard/InfoCard';
 import { DataContext } from '@/app/utils/ContextManager';
 import { useRouter } from 'next/navigation';
 import AlgorithmScoresHistogram, { StudentScore } from './components/AlgorithmScoresHistogram';

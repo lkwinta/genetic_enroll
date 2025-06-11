@@ -15,7 +15,7 @@ interface NumberInputProps {
 
 const NumberInput: FC<NumberInputProps> = ({ label, value, onChange, enabled=true, min = 0, max = 1000, step = 1, description }) => (
   <div className="space-y-2">
-    <label className="settings-number-input settings-text-primary">
+    <label className="settings-number-input text-primary">
       {label}
     </label>
     <input
@@ -29,7 +29,7 @@ const NumberInput: FC<NumberInputProps> = ({ label, value, onChange, enabled=tru
       className="settings-number-input settings-input"
     />
     {description && (
-      <p className={`text-xs settings-text-muted`}>{description}</p>
+      <p className={`text-xs text-muted`}>{description}</p>
     )}
   </div>
 );

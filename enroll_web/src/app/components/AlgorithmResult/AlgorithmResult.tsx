@@ -10,6 +10,7 @@ import { FitnessHistory } from './components/AlgorithmFitnessPlot';
 import { StudentScore } from './components/AlgorithmScoresHistogram';
 import { SubjectScore } from './components/AlgorithmSubjectScoresPlot';
 import AlgorithmSubjectScores from './AlgorithmSubjectScores';
+import ErrorBanner from '../Error/ErrorBanner';
 
 const AlgorithmResult: React.FC = () => {
     const [progress, setProgress] = useState<Progress>({
@@ -71,11 +72,7 @@ const AlgorithmResult: React.FC = () => {
     return (
         <div className="max-w-4xl mx-auto px-4 py-8 bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
             <h1 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Algorithm Results</h1>
-            {error && (
-                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4 mb-6">
-                    <p className="text-red-700 dark:text-red-300">{error}</p>
-                </div>
-            )}
+            {error && <ErrorBanner error={error} />}
             <AlgorithmStatus progress={progress} fitnessHistory={fitnessHistory} viewButton={ready}/>
             {ready && <AlgorithmSubjectScores scores={subjectScores} />}
             {ready && <AlgorithmScoreResults scores={studentScores} />}

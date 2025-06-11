@@ -5,7 +5,7 @@ import {
   Info,
 } from 'lucide-react';
 
-import '../styles/settings.css';
+import './styles/info_card.css';
 
 type InfoCardType = 'info' | 'warning';
 
@@ -16,7 +16,7 @@ interface InfoCardProps {
 }
 
 const InfoCard: React.FC<InfoCardProps> = ({ type, title, message }) => (
-  <div className={`${type} settings-info-card`}>
+  <div className={`${type} info-card`}>
     <div className="flex gap-3">
       {type === 'info' ? (
         <Info className="info-icon" size={16} />

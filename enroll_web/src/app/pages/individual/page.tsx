@@ -7,6 +7,7 @@ import { DataContext } from "@/app/utils/ContextManager";
 import { parseIndividualIntoStudentsMap, parseScheduleIntoLessons } from "@/app/utils/TimetableParser";
 import { Lesson } from "@/app/components/Timetable/interfaces/Lesson";
 import LessonDetailsModal from "@/app/components/LessonDetailsModal/LessonDetailsModal";
+import ErrorBanner from "@/app/components/Error/ErrorBanner";
 
 
 const TimetablePage: NextPage = () => {
@@ -15,10 +16,9 @@ const TimetablePage: NextPage = () => {
 
     if (!schedule || !individual || !preferences) {
         return (
-            <div className="p-6 max-w-8xl mx-auto">
-                <h1 className="text-2xl font-bold">No schedule or individual file uploaded</h1>
-                <p>Please upload a schedule file to view the timetable.</p>
-            </div>
+            <ErrorBanner
+                error="Schedule, individual data or preferences are not available. Please ensure you have fetched the necessary data."
+            />
         );
     }
 

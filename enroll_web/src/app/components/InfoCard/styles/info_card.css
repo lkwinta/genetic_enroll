@@ -1,0 +1,46 @@
+@reference "../../../globals.css";
+
+
+.info-card {
+    @apply p-4 rounded-lg border;
+}
+
+.info.info-card {
+    @apply bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800;
+}
+
+.warning.info-card {
+    @apply bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800;
+}
+
+.info-card h4 {
+    @apply text-sm font-medium;
+}
+
+.info-card h4.info {
+    @apply text-blue-900 dark:text-blue-100;
+}
+
+.info-card h4.warning {
+    @apply text-yellow-900 dark:text-yellow-100;
+}
+
+.info-card p {
+    @apply text-sm font-medium;
+}
+
+.info-card p.info {
+    @apply text-blue-700 dark:text-blue-300;
+}
+
+.info-card p.warning {
+    @apply text-yellow-700 dark:text-yellow-300;
+}
+
+.info-card .info-icon {
+    @apply text-blue-600 dark:text-blue-400 flex-shrink-0;
+}
+
+.info-card .warning-icon {
+    @apply text-yellow-600 dark:text-yellow-400 flex-shrink-0;
+}

@@ -1,6 +1,6 @@
 import React, { FC, CSSProperties } from 'react';
 
-import '../styles/settings.css';
+import './styles/slider_input.css';
 
 interface SliderInputProps {
   label: string;
@@ -14,11 +14,11 @@ interface SliderInputProps {
 
 const SliderInput: FC<SliderInputProps> = ({ label, value, onChange, min = 0, max = 1, step = 0.01, description }) => (
   <div className="space-y-2">
-    <div className="settings-slider-label">
-      <label className="settings-slider-label setting-text-primary">
+    <div className="slider-label">
+      <label className="slider-label text-primary">
         {label}
       </label>
-      <span className="settings-slider-label settings-text-secondary">
+      <span className="slider-label text-secondary">
         {value.toFixed(2)}
       </span>
     </div>
@@ -33,7 +33,7 @@ const SliderInput: FC<SliderInputProps> = ({ label, value, onChange, min = 0, ma
       min={min}
       max={max}
       step={step}
-      className="settings-slider-fill settings-slider-input"
+      className="slider-fill slider-input"
       style={{
         "--percentage": `${((value - min) / (max - min)) * 100}%`,
       } as CSSProperties}

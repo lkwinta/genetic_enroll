@@ -5,16 +5,16 @@ import { NextPage } from "next";
 import Timetable from "@/app/components/Timetable/Timetable";
 import { parseScheduleIntoLessons, parseStudentsPreferences } from "@/app/utils/TimetableParser";
 import { DataContext } from "@/app/utils/ContextManager";
+import ErrorBanner from "@/app/components/Error/ErrorBanner";
 
 const TimetablePage: NextPage = () => {
     const { schedule, preferences } = useContext(DataContext);
 
     if (!schedule || !preferences) {
         return (
-            <div className="p-6 max-w-8xl mx-auto">
-                <h1 className="text-2xl font-bold">No preferences file uploaded</h1>
-                <p>Please upload a preference file to view the timetable.</p>
-            </div>
+            <ErrorBanner
+                error="Schedule or preferences data is not available. Please ensure you have fetched the schedule and preferences."
+            />
         );
     }
 

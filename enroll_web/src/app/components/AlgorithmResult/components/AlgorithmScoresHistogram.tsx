@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Label } from 'recharts';
-import SettingsSliderInput from '../../Settings/components/SettingsSliderInput';
+import SliderInput from '@/app/components/SliderInput/SliderInput';
 
 import '@/app/components/Settings/styles/settings.css';
 
@@ -50,7 +50,7 @@ const AlgorithmScoresHistogram: React.FC<AlgorithmScoresHistogramProps> = ({ sco
 
     return (
         <>
-            <SettingsSliderInput
+            <SliderInput
                 label="Bin Width"
                 value={binWidth}
                 onChange={(value) => { setBinWidth(value) }}

@@ -16,18 +16,6 @@
     @apply bg-blue-50 dark:bg-blue-900/20;
 }
 
-.settings-text-primary {
-    @apply text-gray-900 dark:text-white;
-}
-
-.settings-text-secondary {
-    @apply text-gray-600 dark:text-gray-300;
-}
-
-.settings-text-muted {
-    @apply text-gray-500 dark:text-gray-400;
-}
-
 .settings-border {
     @apply border-gray-200 dark:border-gray-700;
 }
@@ -48,50 +36,6 @@
     @apply bg-red-600 hover:bg-red-700 text-white;
 }
 
-.settings-info-card {
-    @apply p-4 rounded-lg border;
-}
-
-.info.settings-info-card {
-    @apply bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800;
-}
-
-.warning.settings-info-card {
-    @apply bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800;
-}
-
-.settings-info-card h4 {
-    @apply text-sm font-medium;
-}
-
-.settings-info-card h4.info {
-    @apply text-blue-900 dark:text-blue-100;
-}
-
-.settings-info-card h4.warning {
-    @apply text-yellow-900 dark:text-yellow-100;
-}
-
-.settings-info-card p {
-    @apply text-sm font-medium;
-}
-
-.settings-info-card p.info {
-    @apply text-blue-700 dark:text-blue-300;
-}
-
-.settings-info-card p.warning {
-    @apply text-yellow-700 dark:text-yellow-300;
-}
-
-.settings-info-card .info-icon {
-    @apply text-blue-600 dark:text-blue-400 flex-shrink-0;
-}
-
-.settings-info-card .warning-icon {
-    @apply text-yellow-600 dark:text-yellow-400 flex-shrink-0;
-}
-
 label.settings-dropdown {
     @apply block text-sm font-medium;
 }
@@ -106,32 +50,6 @@ label.settings-number-input {
 
 input.settings-number-input {
     @apply w-full px-3 py-2 rounded-lg border focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors;
-}
-
-.settings-slider-label {
-    @apply flex justify-between items-center;
-}
-
-.settings-slider-label label {
-    @apply text-sm font-medium;
-}
-
-.settings-slider-label span {
-    @apply text-sm font-mono;
-}
-
-.settings-slider-input {
-    @apply w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer;
-}
-
-.settings-slider-fill {
-  background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--percentage, 0%), #d1d5db var(--percentage, 0%), #d1d5db 100%);
-}
-
-@media (prefers-color-scheme: dark) {
-    .settings-slider-fill {
-        background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--percentage, 0%), #374151 var(--percentage, 0%), #374151 100%);
-    }
 }
 
 .settings-toggle-switch {
