@@ -352,7 +352,8 @@ class Service:
         return fitness_per_subject
 
 
-def generate_individual_(
+@ray.remote
+def generate_individual(
     plan, schedule_dict, num_groups, students, subjects, cap_dict
 ):
     """
@@ -443,7 +444,8 @@ def generate_individual_(
     return df
 
 
-def mutate_swap_(
+@ray.remote
+def mutate_swap(
     students, schedule_dict, individual, mutation_rate, max_attempts=50
 ):
     mutated = individual.copy()
@@ -490,7 +492,8 @@ def mutate_swap_(
                     break
     return mutated
 
-def crossover_split_(parent1, parent2, cut):
+@ray.remote
+def crossover_split(parent1, parent2, cut):
     """
     Krzyżuje dwóch osobników i zwraca nowego.
 
@@ -510,8 +513,8 @@ def crossover_split_(parent1, parent2, cut):
 
     return child
 
-
-def crossover_fill_(schedule_dict, parent1, parent2):
+@ray.remote
+def crossover_fill(schedule_dict, parent1, parent2):
     """
     Krzyżuje dwóch osobników i zwraca nowego.
 
@@ -549,8 +552,8 @@ def crossover_fill_(schedule_dict, parent1, parent2):
 
     return child
 
-
-def fitness_(pref, individual, pref_dict):
+@ray.remote
+def fitness(pref, individual, pref_dict):
     total_points = 0
     max_points = pref.groupby(["student_id", "subject"])["preference"].max().sum()
 
@@ -563,19 +566,3 @@ def fitness_(pref, individual, pref_dict):
             total_points += points
 
     return float(round(total_points / max_points, 2))
-
-
-generate_individual = ray.remote(num_cpus=1)(generate_individual_)
-mutate_swap = ray.remote(num_cpus=1)(mutate_swap_)
-crossover_split = ray.remote(num_cpus=1)(crossover_split_)
-crossover_fill = ray.remote(num_cpus=1)(crossover_fill_)
-fitness = ray.remote(num_cpus=1)(fitness_)
-
-def to_remote(thread_count=1):
-    global generate_individual, mutate_swap, crossover_split, fitness, crossover_fill
-    generate_individual = ray.remote(num_cpus=thread_count)(generate_individual_)
-    # mutate_chain_swap = ray.remote(num_cpus=thread_count)(mutate_chain_swap_)
-    mutate_swap = ray.remote(num_cpus=thread_count)(mutate_swap_)
-    crossover_split = ray.remote(num_cpus=thread_count)(crossover_split_)
-    crossover_fill = ray.remote(num_cpus=thread_count)(crossover_fill_)
-    fitness = ray.remote(num_cpus=thread_count)(fitness_)

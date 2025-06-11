@@ -3,7 +3,6 @@ import ray
 from flask import request, jsonify, Flask
 from flask_cors import CORS
 
-from service import to_remote
 from service import Service
 
 app = Flask(__name__)
@@ -13,9 +12,6 @@ algorithm_settings = {}
 fitness_settings = {}
 performance_settings = {}
 
-if ray.is_initialized():
-    ray.shutdown()
-ray.init(num_cpus=8)
 service = Service()
 
 @app.route("/upload/settings", methods=["POST"])
@@ -63,9 +59,11 @@ def set_settings(settings):
         rename_map.get(k, k): v
         for k, v in settings.get("performanceSettings").items()
     }
-
-    thread_count = performance_settings.get("thread_count", 1)
-    to_remote(thread_count)
+    if performance_settings.get("enable_parallel_processing", False):
+        thread_count = performance_settings.get("thread_count", 1)
+        if ray.is_initialized():
+            ray.shutdown()
+        ray.init(num_cpus=thread_count)
 
 @app.route('/upload/schedule', methods=['POST'])
 def upload_schedule():

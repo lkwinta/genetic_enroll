@@ -1,13 +1,12 @@
-from service import Service, to_remote
+from service import Service
 import pandas as pd
 
 import ray
 
 if ray.is_initialized():
     ray.shutdown()
-ray.init()
+ray.init(num_cpus=12)
 service = Service()
-to_remote(12)
 
 preferences = pd.read_csv("../data/preferences/prefs_1.csv", sep=',')
 schedule = pd.read_csv("../data/schedules/schedule_1.csv", sep=";")
