@@ -47,8 +47,8 @@ const AlgorithmSettingsSection: FC<AlgorithmSettingsProps> = ({ settings, setSet
         <Dropdown
           label="Crossover Type"
           options={[
-            { value: 'split', label: 'Split' },
-            { value: 'fill', label: 'Fill' },
+            { value: 'row_scx', label: 'Row-scx' },
+            { value: 'column_pmx', label: 'Column-pmx' },
           ]}
           value={settings.crossoverType}
           onChange={(value) => updateSetting('crossoverType', value as CrossoverType)}

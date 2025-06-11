@@ -36,6 +36,8 @@ class Service:
         # (subject, group_id) -> (day, start_time, end_time)
         self.schedule_dict = {}
 
+        self.groups_by_subject = {}
+
         self.plan_ref              = None
         self.pref_ref              = None
         self.students_ref          = None
@@ -89,11 +91,17 @@ class Service:
                 (start + DUR).time(),
             )
 
-        self.plan_ref          = ray.put(self.plan)
-        self.subjects_ref      = ray.put(self.subjects)
-        self.cap_dict_ref      = ray.put(self.cap_dict)
-        self.schedule_dict_ref = ray.put(self.schedule_dict)
-        self.num_groups_ref    = ray.put(self.num_groups)
+        self.groups_by_subject = {
+            subject: self.plan[self.plan["subject"] == subject]["group_id"].unique().tolist()
+            for subject in self.subjects
+        }
+
+        self.plan_ref              = ray.put(self.plan)
+        self.subjects_ref          = ray.put(self.subjects)
+        self.cap_dict_ref          = ray.put(self.cap_dict)
+        self.schedule_dict_ref     = ray.put(self.schedule_dict)
+        self.num_groups_ref        = ray.put(self.num_groups)
+        self.groups_by_subject_ref = ray.put(self.groups_by_subject)
 
     def load_preferences(self, preferences_df):
         self.pref = preferences_df.copy()
@@ -199,6 +207,11 @@ class Service:
 
         print("Starting evolution...")
         for gen in range(max_generations):
+
+            if crossover_type == 'row_scx':
+                population = [reorder_by_row_fitness.remote(individual, self.pref_dict_ref, self.pref_ref) for individual in population]
+                population = ray.get(population)
+
             scores = [
                 fitness.remote(self.pref_ref, individual, self.pref_dict_ref)
                 for individual in population
@@ -236,10 +249,11 @@ class Service:
                 p2 = random.choice(elite_population)
 
                 if random.random() < crossover_rate:
-                    if crossover_type == "split":
-                        child = crossover_split.remote(p1, p2, len(p1) // 2)
-                    elif crossover_type == "fill":
-                        child = crossover_fill.remote(self.schedule_dict_ref, p1, p2)
+                    if crossover_type == "row_scx":
+                        child = row_scx.remote(p1, p2, self.cap_dict_ref, self.students_ref, self.schedule_dict_ref)
+                    elif crossover_type == "column_pmx":
+                        child = column_pmx.remote(p1, p2, self.cap_dict_ref, self.subjects_ref)
+                        child = repair_collisions.remote(child, self.cap_dict_ref, self.students_ref, self.schedule_dict_ref, self.groups_by_subject_ref, self.num_groups_ref)
                 else:
                     child = p1.copy()
 
@@ -374,75 +388,45 @@ def generate_individual(
 
     df = pd.DataFrame(index=students, columns=subjects)
     for student in students:
-        for subject in subjects:
-            groups_ok = []
-            overflowed_but_ok = []
-            conflicts_but_ok = []
-
-            for group_id in groups_by_subject[subject]:
-                occupancy_flag = False
-                conflict_flag = False
-
-                if occupancy[(subject, group_id)] >= cap_dict.get(
-                    (subject, group_id), 0
-                ):
-                    occupancy_flag = True
-
-                day, s, e = schedule_dict[(subject, group_id)]
-                if reserved[student][(day, s, e)] != 0:
-                    conflict_flag = True
-
-                if not occupancy_flag and not conflict_flag:
-                    groups_ok.append(group_id)
-                elif occupancy_flag and not conflict_flag:
-                    overflowed_but_ok.append(group_id)
-                elif not occupancy_flag and conflict_flag:
-                    conflicts_but_ok.append(group_id)
-                    
-            if groups_ok:
-                group_id = random.choice(groups_ok)
-            elif conflicts_but_ok:
-                group_id = random.choice(conflicts_but_ok)
-                for stu_b in students:
-                    if student != stu_b:
-                        if pd.isna(grp_b := df.loc[stu_b, subject]):
-                            continue
-                        if group_id == grp_b:
-                            continue
-
-                        day_a, s_a, e_a = schedule_dict[(subject, group_id)]
-                        day_b, s_b, e_b = schedule_dict[(subject, grp_b)]
-
-                        if reserved[stu_b][(day_a, s_a, e_a)] != 0:
-                            continue
-                        if reserved[student][(day_b, s_b, e_b)] != 0:
-                            continue
-
-                        df.loc[stu_b, subject] = group_id
-                        reserved[stu_b][(day_b, s_b, e_b)] -= 1
-                        reserved[stu_b][(day_a, s_a, e_a)] += 1
-                        occupancy[(subject, group_id)] += 1
-
-                        group_id = grp_b
-                        occupancy[(subject, group_id)] -= 1
-                        break
-                else: 
-                    print(
-                    f"Konflikt: Brak grup dla studenta {student} i przedmiotu {subject}"
-                    )
-                    group_id = random.randint(1, num_groups[subject])
-
-            else:
-                print(
-                    f"Konflikt: Brak grup dla studenta {student} i przedmiotu {subject}"
-                )
-                group_id = random.randint(1, num_groups[subject])
-
-            df.loc[student, subject] = group_id
-            occupancy[(subject, group_id)] += 1
-            reserved[student][schedule_dict[(subject, group_id)]] += 1
+        generate_student(df, student, occupancy, reserved, subjects, groups_by_subject, cap_dict, schedule_dict, num_groups)
     return df
 
+def fitness_per_student(pref, individual, pref_dict):
+
+        student_scores = defaultdict(float)
+        student_max = defaultdict(float)
+
+        max_points = pref.groupby(["student_id", "subject"])["preference"].max().reset_index()
+        for _, row in max_points.iterrows():
+            student = row['student_id']
+            student_max[student] += row['preference']
+
+        for student in individual.index:
+            for subject in individual.columns:
+                group = individual.loc[student, subject]
+                key = (student, subject, group)
+                points = pref_dict.get(key, 0)
+
+                student_scores[student] += points
+
+        fitness_dict = {
+            student: round(student_scores[student] / student_max[student], 2)
+            if student_max[student] > 0 else 1.0
+            for student in student_scores
+        }
+        
+        return fitness_dict
+
+@ray.remote
+def reorder_by_row_fitness(individual: pd.DataFrame,
+                           pref_dict,
+                           pref) -> pd.DataFrame:
+    
+    row_scores = list(fitness_per_student(pref, individual, pref_dict).items())
+    row_scores.sort(key=lambda x: x[1], reverse=True)
+    ordered_index = [stu for stu, _ in row_scores]
+
+    return individual.loc[ordered_index]
 
 @ray.remote
 def mutate_swap(
@@ -491,6 +475,250 @@ def mutate_swap(
 
                     break
     return mutated
+
+def generate_student(individual, student, occupancy, reserved, subjects, groups_by_subject, cap_dict, schedule_dict, num_groups):
+    for subject in subjects:
+        groups_ok = []
+        overflowed_but_ok = []
+        conflicts_but_ok = []
+
+        for group_id in groups_by_subject[subject]:
+            occupancy_flag = False
+            conflict_flag = False
+
+            if occupancy[(subject, group_id)] >= cap_dict.get(
+                (subject, group_id), 0
+            ):
+                occupancy_flag = True
+
+            day, s, e = schedule_dict[(subject, group_id)]
+            if reserved[student][(day, s, e)] != 0:
+                conflict_flag = True
+
+            if not occupancy_flag and not conflict_flag:
+                groups_ok.append(group_id)
+            elif occupancy_flag and not conflict_flag:
+                overflowed_but_ok.append(group_id)
+            elif not occupancy_flag and conflict_flag:
+                conflicts_but_ok.append(group_id)
+                
+        if groups_ok:
+            group_id = random.choice(groups_ok)
+        
+        elif conflicts_but_ok:
+            group_id = random.choice(conflicts_but_ok)
+            for stu_b in individual.index:
+                if student != stu_b:
+                    if pd.isna(grp_b := individual.loc[stu_b, subject]):
+                        continue
+                    if group_id == grp_b:
+                        continue
+
+                    day_a, s_a, e_a = schedule_dict[(subject, group_id)]
+                    day_b, s_b, e_b = schedule_dict[(subject, grp_b)]
+
+                    if reserved[stu_b][(day_a, s_a, e_a)] != 0:
+                        continue
+                    if reserved[student][(day_b, s_b, e_b)] != 0:
+                        continue
+
+                    individual.loc[stu_b, subject] = group_id
+                    reserved[stu_b][(day_b, s_b, e_b)] -= 1
+                    reserved[stu_b][(day_a, s_a, e_a)] += 1
+                    occupancy[(subject, group_id)] += 1
+
+                    group_id = grp_b
+                    occupancy[(subject, group_id)] -= 1
+                    break
+            else: 
+                print(
+                f"Konflikt: Brak grup dla studenta {student} i przedmiotu {subject}"
+                )
+                group_id = random.randint(1, num_groups[subject])
+
+        else:
+            print(
+                f"Konflikt: Brak grup dla studenta {student} i przedmiotu {subject}"
+            )
+            group_id = random.randint(1, num_groups[subject])
+            break
+
+        individual.loc[student, subject] = group_id
+        occupancy[(subject, group_id)] += 1
+        reserved[student][schedule_dict[(subject, group_id)]] += 1
+
+@ray.remote
+def row_scx(parent_1, parent_2, cap_dict, students, schedule_dict, subjects, groups_by_subject, num_groups):
+    child = pd.DataFrame(index=parent_1.index, columns=parent_1.columns)
+
+    occupancy = {key: 0 for key in cap_dict}
+    reserved = {stu: Counter() for stu in students}
+
+    parents = [parent_1, parent_2]
+
+    for i, stu in enumerate(parent_1.index):
+        row = parents[i % 2].loc[stu]
+        
+        for i in range(2):
+            for subj, group_id in row.items():
+                if occupancy[(subj, group_id)] >= cap_dict[(subj, group_id)]:
+                    row = parents[(i + 1) % 2].loc[stu]
+                    break
+            else:
+                break
+        else:
+            generate_student(child, stu, occupancy, reserved, subjects, groups_by_subject, cap_dict, schedule_dict, num_groups)
+            continue
+        
+        for subj, group_id in row.items():
+            occupancy[(subj, group_id)] += 1
+            key = schedule_dict[(subj, group_id)]
+            reserved[stu][key] += 1
+
+        child.loc[stu] = row
+    
+    return child
+
+def pmx(p1: list, p2: list) -> list: 
+    n = len(p1)
+    a, b = sorted(random.sample(range(n), 2))
+
+    child = [None] * n
+    child[a:b] = p1[a:b]
+    for i in range(a, b):
+        if p2[i] not in child:
+            pos = i
+            while a <= pos < b:
+                pos = p2.index(p1[pos])
+            child[pos] = p2[i]
+
+    for i in range(n):
+        if child[i] is None:
+            child[i] = p2[i]
+
+    return child
+
+def df_to_perm(df, subj, slots) -> list:
+    bucket = defaultdict(list)
+    for stu, group_id in df[subj].items():
+        bucket[group_id].append(stu)
+
+    empty_count = 0
+    perm = []
+    for g in slots:
+        if bucket[g]:
+            perm.append(bucket[g].pop())
+        else:
+            empty_count += 1
+            perm.append(f"empty_{empty_count}")
+    return perm
+
+def perm_to_df(perm, slots):
+    series = pd.Series(index=perm, dtype="Int64")
+    for stu, grp in zip(perm, slots):
+        if stu.startswith("empty"):
+            continue
+        series[stu] = int(grp)
+    return series
+
+@ray.remote
+def column_pmx(parent1, parent2, cap_dict, subjects):
+    child = pd.DataFrame(index=parent1.index, columns=parent1.columns)
+
+    slots_by_subj = defaultdict(list)
+    for (subj, group_id), cap in cap_dict.items():
+        slots_by_subj[subj] += [group_id] * cap
+
+    for subj in subjects:
+        slots = slots_by_subj[subj]
+
+        perm1 = df_to_perm(parent1, subj, slots)
+        perm2 = df_to_perm(parent2, subj, slots)
+
+        child_perm = pmx(perm1, perm2)
+       
+        child[subj] = perm_to_df(child_perm, slots)
+
+    return child    
+
+@ray.remote
+def repair_collisions(df: pd.DataFrame, cap_dict, students, schedule_dict, groups_by_subject, num_groups):
+    occupancy = {key: 0 for key in cap_dict}
+    reserved = {stu: Counter() for stu in students}
+
+    for student in df.index:
+        for subject in df.columns:
+            group_id = df.loc[student, subject]
+            reserved[student][schedule_dict[(subject, group_id)]] += 1
+            occupancy[(subject, group_id)] += 1
+
+    count = 0
+    for student in df.index:
+        for subject in df.columns:
+            group_id = df.loc[student, subject]
+            slot = schedule_dict[(subject, group_id)]
+
+            if reserved[student][slot] == 1:
+                continue
+            
+            count += 1
+            groups_ok = []
+
+            for gid in groups_by_subject[subject]:
+                occupancy_flag = False
+                conflict_flag = False
+
+                if occupancy[(subject, gid)] >= cap_dict.get(
+                    (subject, gid), 0
+                ):
+                    occupancy_flag = True
+
+                day, s, e = schedule_dict[(subject, gid)]
+                if reserved[student][(day, s, e)] != 0:
+                    conflict_flag = True
+
+                if not occupancy_flag and not conflict_flag:
+                    groups_ok.append(gid)
+                    
+            if groups_ok:
+                group_id = random.choice(groups_ok)
+                df.loc[student, subject] = group_id
+                occupancy[(subject, group_id)] += 1
+                reserved[student][schedule_dict[(subject, group_id)]] += 1
+                continue
+
+            else:
+                for stu_b in df.index:
+                    if student != stu_b:
+                        if pd.isna(grp_b := df.loc[stu_b, subject]):
+                            continue
+                        if group_id == grp_b:
+                            continue
+
+                        day_a, s_a, e_a = schedule_dict[(subject, group_id)]
+                        day_b, s_b, e_b = schedule_dict[(subject, grp_b)]
+
+                        if reserved[stu_b][(day_a, s_a, e_a)] != 0:
+                            continue
+                        if reserved[student][(day_b, s_b, e_b)] != 0:
+                            continue
+
+                        df.loc[stu_b, subject] = group_id
+                        df.loc[student, subject] = grp_b
+
+                        reserved[stu_b][(day_b, s_b, e_b)] -= 1
+                        reserved[stu_b][(day_a, s_a, e_a)] += 1
+                        reserved[student][(day_b, s_b, e_b)] += 1
+                        reserved[student][(day_a, s_a, e_a)] -= 1
+                        break
+                else: 
+                    print(
+                    f"Konflikt: Brak grup dla studenta {student} i przedmiotu {subject}"
+                    )
+                    group_id = random.randint(1, num_groups[subject])
+                continue
+
+    return df
 
 @ray.remote
 def crossover_split(parent1, parent2, cut):
