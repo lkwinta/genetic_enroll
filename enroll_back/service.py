@@ -572,7 +572,7 @@ crossover_fill = ray.remote(num_cpus=1)(crossover_fill_)
 fitness = ray.remote(num_cpus=1)(fitness_)
 
 def to_remote(thread_count=1):
-    global generate_individual, mutate_swap, crossover_split, fitness
+    global generate_individual, mutate_swap, crossover_split, fitness, crossover_fill
     generate_individual = ray.remote(num_cpus=thread_count)(generate_individual_)
     # mutate_chain_swap = ray.remote(num_cpus=thread_count)(mutate_chain_swap_)
     mutate_swap = ray.remote(num_cpus=thread_count)(mutate_swap_)

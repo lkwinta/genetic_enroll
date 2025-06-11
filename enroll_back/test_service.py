@@ -1,4 +1,4 @@
-from service import Service
+from service import Service, to_remote
 import pandas as pd
 
 import ray
@@ -7,6 +7,7 @@ if ray.is_initialized():
     ray.shutdown()
 ray.init()
 service = Service()
+to_remote(12)
 
 preferences = pd.read_csv("../data/preferences/prefs_1.csv", sep=',')
 schedule = pd.read_csv("../data/schedules/schedule_1.csv", sep=";")
@@ -26,8 +27,8 @@ print(service.evolve(
     enable_early_stopping=True,
     early_stopping_stagnation_epochs=50,
     tournament_size=5,
-    mutation_type="gaussian",
-    crossover_type="uniform",
+    mutation_type="swap",
+    crossover_type="split",
 ))
 
 print(service.fitness_per_subject())

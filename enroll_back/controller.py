@@ -3,7 +3,7 @@ import ray
 from flask import request, jsonify, Flask
 from flask_cors import CORS
 
-from enroll_back.service import to_remote
+from service import to_remote
 from service import Service
 
 app = Flask(__name__)
