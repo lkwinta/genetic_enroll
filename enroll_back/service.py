@@ -250,7 +250,7 @@ class Service:
 
                 if random.random() < crossover_rate:
                     if crossover_type == "row_scx":
-                        child = row_scx.remote(p1, p2, self.cap_dict_ref, self.students_ref, self.schedule_dict_ref)
+                        child = row_scx.remote(p1, p2, self.cap_dict_ref, self.students_ref, self.schedule_dict_ref, self.subjects_ref, self.groups_by_subject_ref, self.num_groups_ref)
                     elif crossover_type == "column_pmx":
                         child = column_pmx.remote(p1, p2, self.cap_dict_ref, self.subjects_ref)
                         child = repair_collisions.remote(child, self.cap_dict_ref, self.students_ref, self.schedule_dict_ref, self.groups_by_subject_ref, self.num_groups_ref)
@@ -643,6 +643,7 @@ def column_pmx(parent1, parent2, cap_dict, subjects):
 
 @ray.remote
 def repair_collisions(df: pd.DataFrame, cap_dict, students, schedule_dict, groups_by_subject, num_groups):
+    df = df.copy(deep=True)
     occupancy = {key: 0 for key in cap_dict}
     reserved = {stu: Counter() for stu in students}
 
