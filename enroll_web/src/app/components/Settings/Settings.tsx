@@ -10,10 +10,9 @@ import {
 
 import AlgorithmSettingsSection from './AlgorithmSettingsSection';
 import FitnessFunctionSettingsSection from './FitnessFunctionSettingsSection';
-import PerformanceSettingsSection from './PerformanceSettingsSection';
 
 import './styles/settings.css';
-import { AlgorithmSettingsState, FitnessFunctionSettingsState, PerformanceSettingsState, SettingsState } from './interfaces/AlgorithmSettings';
+import { AlgorithmSettingsState, FitnessFunctionSettingsState, SettingsState } from './interfaces/AlgorithmSettings';
 import { DataContext } from '@/app/utils/ContextManager';
 import { useRouter } from "next/navigation";
 import { sendToBackend } from '@/app/utils/BackendController';
@@ -22,7 +21,7 @@ const Settings: React.FC = () => {
     const router = useRouter();
     const defaultAlgorithmSettings: AlgorithmSettingsState = {
         mutationType: "swap",
-        crossoverType: "split",
+        crossoverType: "row_scx",
 
         generationsCount: 50,
         populationSize: 100,
@@ -45,15 +44,9 @@ const Settings: React.FC = () => {
         penaltyWeight: 0.1,
     }
 
-    const defaultPerformanceSettings: PerformanceSettingsState = {
-        enableParallelProcessing: true,
-        threadCount: 4,
-    };
-
     const [isRunning, setIsRunning] = useState(false);
     const [algorithmSettings, setAlgorithmSettings] = useState<AlgorithmSettingsState>(defaultAlgorithmSettings);
     const [fitnessFunctionSettings, setFitnessFunctionSettings] = useState<FitnessFunctionSettingsState>(defaultFitnessFunctionSettings);
-    const [performanceSettings, setPerformanceSettings] = useState<PerformanceSettingsState>(defaultPerformanceSettings);
     const {schedule, preferences} = useContext(DataContext);
 
     const runAlgorithm = async () => {
@@ -62,13 +55,10 @@ const Settings: React.FC = () => {
             return;
         }
 
-        console.info("Schedule file or preferences file is not set");
-
         setIsRunning(true);
         const settings: SettingsState = {
             algorithmSettings,
             fitnessFunctionSettings,
-            performanceSettings
         };
 
         try {
@@ -82,14 +72,11 @@ const Settings: React.FC = () => {
             console.log("Error sending data to backend:", (error as Error).message);
             setIsRunning(false);
         }
-
-        console.info("Schedule file or preferences file is not set");
     };
 
     const resetSettings = () => {
         setAlgorithmSettings(defaultAlgorithmSettings);
         setFitnessFunctionSettings(defaultFitnessFunctionSettings);
-        setPerformanceSettings(defaultPerformanceSettings);
     };
 
     return (
@@ -130,7 +117,6 @@ const Settings: React.FC = () => {
             <div className="space-y-6">
                 <AlgorithmSettingsSection settings={algorithmSettings} setSettings={setAlgorithmSettings} />
                 <FitnessFunctionSettingsSection settings={fitnessFunctionSettings} setSettings={setFitnessFunctionSettings} />
-                <PerformanceSettingsSection settings={performanceSettings} setSettings={setPerformanceSettings} />
             </div>
         </div>
     );

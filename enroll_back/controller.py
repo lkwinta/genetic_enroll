@@ -4,6 +4,7 @@ from flask import request, jsonify, Flask
 from flask_cors import CORS
 
 from service import Service
+import time
 
 app = Flask(__name__)
 CORS(app, origins=["http://localhost:3000"])
@@ -14,11 +15,15 @@ performance_settings = {}
 
 service = Service()
 
+if ray.is_initialized():
+    ray.shutdown()
+ray.init()
+
 @app.route("/upload/settings", methods=["POST"])
 def process_settings():
     data = request.json
 
-    required_sections = ["algorithmSettings", "fitnessFunctionSettings", "performanceSettings"]
+    required_sections = ["algorithmSettings", "fitnessFunctionSettings"]
     if not all(section in data for section in required_sections):
         return jsonify({"error": "Missing configuration sections"}), 400
 
@@ -43,8 +48,6 @@ def set_settings(settings):
         'capacityWeight': 'capacity_weight',
         'diversityWeight': 'diversity_weight',
         'penaltyWeight': 'penalty_weight',
-        'enableParallelProcessing': 'enable_parallel_processing',
-        'threadCount': 'thread_count'
     }
     global algorithm_settings, fitness_settings, performance_settings
     algorithm_settings = {
@@ -55,16 +58,7 @@ def set_settings(settings):
         rename_map.get(k, k): v
         for k, v in settings.get("fitnessFunctionSettings").items()
     }
-    performance_settings = {
-        rename_map.get(k, k): v
-        for k, v in settings.get("performanceSettings").items()
-    }
-    if performance_settings.get("enable_parallel_processing", False):
-        thread_count = performance_settings.get("thread_count", 1)
-        if ray.is_initialized():
-            ray.shutdown()
-        ray.init(num_cpus=thread_count)
-
+        
 @app.route('/upload/schedule', methods=['POST'])
 def upload_schedule():
     schedule_json = request.get_json()

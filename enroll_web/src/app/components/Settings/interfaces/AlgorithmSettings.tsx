@@ -1,7 +1,7 @@
 import {Dispatch, SetStateAction} from 'react';
 
 export type MutationType = 'swap' | 'chain_swap';
-export type CrossoverType = 'split' | 'fill';
+export type CrossoverType = 'row_scx' | 'column_pmx';
 export type SelectionType = 'truncation' | 'tournament';
 
 export interface AlgorithmSettingsState {
@@ -29,15 +29,9 @@ export interface FitnessFunctionSettingsState {
     penaltyWeight: number;
 }
 
-export interface PerformanceSettingsState {
-    enableParallelProcessing: boolean;
-    threadCount: number;
-}
-
 export interface SettingsState {
     algorithmSettings: AlgorithmSettingsState;
     fitnessFunctionSettings: FitnessFunctionSettingsState;
-    performanceSettings: PerformanceSettingsState;
 }
 
 export function updateSettingFactory<T>(setFunction: Dispatch<SetStateAction<T>>){
