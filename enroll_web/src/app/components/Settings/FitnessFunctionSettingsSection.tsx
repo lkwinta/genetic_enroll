@@ -35,22 +35,22 @@ const FitnessFunctionSettingsSection: FC<FitnessFunctionSettingsProps> = ({ sett
                 description="Weight for matching student preferences"
               />
               <SliderInput
-                label="Capacity Weight"
-                value={settings.capacityWeight}
-                onChange={(value) => updateSetting('capacityWeight', value)}
-                description="Weight for respecting group capacities"
+                label="Balance Weight"
+                value={settings.balanceWeight}
+                onChange={(value) => updateSetting('balanceWeight', value)}
+                description="Weight for maintaining balanced group sizes"
               />
               <SliderInput
-                label="Diversity Weight"
-                value={settings.diversityWeight}
-                onChange={(value) => updateSetting('diversityWeight', value)}
-                description="Weight for maintaining group diversity"
+                label="Fairness Weight"
+                value={settings.fairnessWeight}
+                onChange={(value) => updateSetting('fairnessWeight', value)}
+                description="Weight for balancing satisfaction across all students"
               />
               <SliderInput
-                label="Penalty Weight"
-                value={settings.penaltyWeight}
-                onChange={(value) => updateSetting('penaltyWeight', value)}
-                description="Weight for constraint violation penalties"
+                label="Compact Weight"
+                value={settings.compactWeight}
+                onChange={(value) => updateSetting('compactWeight', value)}
+                description="Weight for reducing empty slots between classes"
               />
             </div>
             
@@ -60,11 +60,11 @@ const FitnessFunctionSettingsSection: FC<FitnessFunctionSettingsProps> = ({ sett
                   Total Weight:
                 </span>
                 <span className={`text-sm font-bold ${
-                  Math.abs((settings.preferenceWeight + settings.capacityWeight + settings.diversityWeight + settings.penaltyWeight) - 1.0) < 0.01
+                  Math.abs((settings.preferenceWeight + settings.balanceWeight + settings.fairnessWeight + settings.compactWeight) - 1.0) < 0.01
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-red-600 dark:text-red-400'
                 }`}>
-                  {(settings.preferenceWeight + settings.capacityWeight + settings.diversityWeight + settings.penaltyWeight).toFixed(2)}
+                  {(settings.preferenceWeight + settings.balanceWeight + settings.fairnessWeight + settings.compactWeight).toFixed(2)}
                 </span>
               </div>
             </div>

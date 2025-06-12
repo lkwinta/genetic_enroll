@@ -190,13 +190,22 @@ class Service:
             population_size,
             enable_early_stopping,
             early_stopping_stagnation_epochs,
-            # preference_weight,
-            # capacity_weight,
-            # diversity_weight,
-            # penalty_weight,
+
+            preference_weight,
+            balance_weight,
+            fairness_weight,
+            compact_weight
     ):
         population = self.generate_population(population_size)
         stagnation_count = 0
+
+        weights = {
+            'pref':     preference_weight,
+            'balance':  balance_weight,
+            'fairness': fairness_weight,
+            'compact':  compact_weight
+        }
+        weights_ref = ray.put(weights)
         
         self.history = []
         self.current_best_individual = None
@@ -213,7 +222,7 @@ class Service:
                 population = ray.get(population)
 
             scores = [
-                fitness.remote(self.pref_ref, individual, self.pref_dict_ref)
+                fitness.remote(individual, weights_ref, self.pref_ref, self.pref_dict_ref, self.plan_ref, self.schedule_dict_ref)
                 for individual in population
             ]
             scores = ray.get(scores)
@@ -819,8 +828,45 @@ def crossover_fill(schedule_dict, parent1, parent2):
 
     return child
 
-@ray.remote
-def fitness(pref, individual, pref_dict):
+def balance_penalty(individual, plan):
+    total_penalty = 0
+    for subj in individual.columns:
+        cnts = individual[subj].value_counts()
+        max_cap = plan[plan['subject'] == subj]['capacity'].max()
+        total_penalty += cnts.std() / max_cap
+
+    return -total_penalty
+
+def fairness_penalty(individual, pref, pref_dict):
+    scores = fitness_per_student(pref, individual, pref_dict)
+    scores = pd.DataFrame.from_dict(scores, orient='index', columns=['score'])
+    return -scores['score'].std()
+
+def student_daily_gaps(slots):
+    timeline = defaultdict(list)
+    for d, s, e in slots:
+        timeline[d].append((s, e))
+
+    total_gap = 0
+    for lst in timeline.values():
+        lst.sort()
+        for (_, prev_end), (next_start, _) in zip(lst, lst[1:]):
+            gap = ((next_start.hour * 60 + next_start.minute) - (prev_end.hour * 60 + prev_end.minute))
+            total_gap += gap
+
+    max_gap = min(len(slots) // 2, 5) * 540
+    return round(total_gap / max_gap, 2)
+
+def compact_penalty(individual, schedule_dict):
+    penalties = defaultdict(float)
+    for stu, row in individual.iterrows():
+        slots = [schedule_dict[(subj, grp)] for subj, grp in row.items()]
+        penalties[stu] = (student_daily_gaps(slots))
+    
+    penalties = pd.DataFrame.from_dict(penalties, orient='index', columns=['score'])
+    return -penalties['score'].mean()
+
+def preference_score(individual, pref, pref_dict):
     total_points = 0
     max_points = pref.groupby(["student_id", "subject"])["preference"].max().sum()
 
@@ -833,3 +879,20 @@ def fitness(pref, individual, pref_dict):
             total_points += points
 
     return float(round(total_points / max_points, 2))
+
+@ray.remote
+def fitness(individual, weights, pref, pref_dict, plan, schedule_dict):
+
+    pref_score   = preference_score(individual, pref, pref_dict)
+    bal_penalty  = balance_penalty(individual, plan)
+    fair_penalty = fairness_penalty(individual, pref, pref_dict)
+    comp_penalty = compact_penalty(individual, schedule_dict)
+
+    score = (
+        weights.get("pref", 1.0)          * pref_score +
+        weights.get("balance", 1.0)       * bal_penalty +
+        weights.get("fairness", 1.0)      * fair_penalty +
+        weights.get("compact", 1.0)       * comp_penalty
+    )
+
+    return max(0.0, min(1.0, round(score, 2)))

@@ -39,9 +39,9 @@ const Settings: React.FC = () => {
 
     const defaultFitnessFunctionSettings: FitnessFunctionSettingsState = {
         preferenceWeight: 0.4,
-        capacityWeight: 0.3,
-        diversityWeight: 0.2,
-        penaltyWeight: 0.1,
+        balanceWeight: 0.3,
+        fairnessWeight: 0.2,
+        compactWeight: 0.1,
     }
 
     const [isRunning, setIsRunning] = useState(false);

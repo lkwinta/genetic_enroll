@@ -45,9 +45,9 @@ def set_settings(settings):
         'earlyStoppingEnabled': 'enable_early_stopping',
         'earlyStoppingStagnationEpochs': 'early_stopping_stagnation_epochs',
         'preferenceWeight': 'preference_weight',
-        'capacityWeight': 'capacity_weight',
-        'diversityWeight': 'diversity_weight',
-        'penaltyWeight': 'penalty_weight',
+        'balanceWeight': 'balance_weight',
+        'fairnessWeight': 'fairness_weight',
+        'compactWeight': 'compact_weight',
     }
     global algorithm_settings, fitness_settings, performance_settings
     algorithm_settings = {
@@ -93,7 +93,7 @@ def upload_preferences():
 @app.route('/start_evolution', methods=['POST'])
 def start_evolution():
     try:
-        service.start_evolution(algorithm_settings)
+        service.start_evolution(algorithm_settings | fitness_settings)
 
         return jsonify({"message": "Evolution started successfully"}), 200
     except Exception as e:

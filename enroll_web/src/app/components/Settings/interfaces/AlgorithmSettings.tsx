@@ -24,9 +24,9 @@ export interface AlgorithmSettingsState {
 
 export interface FitnessFunctionSettingsState {
     preferenceWeight: number;
-    capacityWeight: number;
-    diversityWeight: number;
-    penaltyWeight: number;
+    balanceWeight: number;
+    fairnessWeight: number;
+    compactWeight: number;
 }
 
 export interface SettingsState {
