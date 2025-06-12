@@ -16,7 +16,7 @@ service.load_preferences(preferences)
 
 service.generate_population(1000)
 
-print(service.evolve(
+service.evolve(
     max_generations=100,
     population_size=10,
     mutation_rate=0.1,
@@ -26,8 +26,8 @@ print(service.evolve(
     enable_early_stopping=True,
     early_stopping_stagnation_epochs=50,
     tournament_size=5,
-    mutation_type="swap",
-    crossover_type="split",
-))
+    mutation_type="chain_swap",
+    crossover_type="row_scx",
+)
 
 print(service.fitness_per_subject())

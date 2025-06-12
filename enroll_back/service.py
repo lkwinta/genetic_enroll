@@ -254,13 +254,15 @@ class Service:
                     elif crossover_type == "column_pmx":
                         child = column_pmx.remote(p1, p2, self.cap_dict_ref, self.subjects_ref)
                         child = repair_collisions.remote(child, self.cap_dict_ref, self.students_ref, self.schedule_dict_ref, self.groups_by_subject_ref, self.num_groups_ref)
+                    else:
+                        raise ValueError(f"Unknown crossover type: {crossover_type}")
                 else:
                     child = p1.copy()
 
                 if mutation_type == "swap":
                     child = mutate_swap.remote(self.students_ref, self.schedule_dict_ref, child, mutation_rate)
-                # elif mutation_type == "chain_swap":
-                #     child = mutate_chain_swap.remote(self.students_ref, self.schedule_dict_ref, child, mutation_rate)
+                elif mutation_type == "chain_swap":
+                    child = mutate_chain_swap.remote(self.students_ref, self.schedule_dict_ref, child, mutation_rate)
 
                 new_population.append(child)
 
@@ -476,6 +478,43 @@ def mutate_swap(
                     break
     return mutated
 
+@ray.remote
+def mutate_chain_swap(students, schedule_dict, individual, mutation_rate, max_attempts=50, chain_length=3):
+    mutated = individual.copy()
+    reserved = {stu: Counter() for stu in students}
+    students_list = students.tolist()
+
+    for subj in mutated.columns:
+        if random.random() < mutation_rate:
+            valid_students = [s for s in students_list if not pd.isna(mutated.loc[s, subj])]
+            for _ in range(max_attempts):
+                chain = random.sample(valid_students, chain_length)
+                groups = [mutated.loc[s, subj] for s in chain]
+                times = [schedule_dict[(subj, g)] for g in groups]
+
+                valid = True
+                for i in range(chain_length):
+                    s = chain[i]
+                    new_time = times[(i - 1) % chain_length]
+                    if reserved[s][new_time] > 0:
+                        valid = False
+                        break
+
+                if not valid:
+                    continue
+
+                for i in range(chain_length):
+                    s = chain[i]
+                    old_time = times[i]
+                    new_time = times[(i - 1) % chain_length]
+                    new_group = groups[(i - 1) % chain_length]
+
+                    mutated.loc[s, subj] = new_group
+                    reserved[s][old_time] -= 1
+                    reserved[s][new_time] += 1
+
+    return mutated
+
 def generate_student(individual, student, occupancy, reserved, subjects, groups_by_subject, cap_dict, schedule_dict, num_groups):
     for subject in subjects:
         groups_ok = []
@@ -576,7 +615,6 @@ def row_scx(parent_1, parent_2, cap_dict, students, schedule_dict, subjects, gro
             reserved[stu][key] += 1
 
         child.loc[stu] = row
-    
     return child
 
 def pmx(p1: list, p2: list) -> list: 
