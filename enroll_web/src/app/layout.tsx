@@ -28,7 +28,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div className="content-center min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900 p-6">
+        <div className="content-center min-h-screen transition-colors duration-300 bg-gray-50 dark:bg-gray-900 p-6"
+             data-new-gr-c-s-check-loaded="8.931.0"
+             data-gr-ext-installed="">
           <ContextProvider>
             {children}
           </ContextProvider>
