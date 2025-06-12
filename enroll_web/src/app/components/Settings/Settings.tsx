@@ -16,6 +16,7 @@ import { AlgorithmSettingsState, FitnessFunctionSettingsState, SettingsState } f
 import { DataContext } from '@/app/utils/ContextManager';
 import { useRouter } from "next/navigation";
 import { sendToBackend } from '@/app/utils/BackendController';
+import ErrorBanner from '../Error/ErrorBanner';
 
 const Settings: React.FC = () => {
     const router = useRouter();
@@ -45,13 +46,14 @@ const Settings: React.FC = () => {
     }
 
     const [isRunning, setIsRunning] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [algorithmSettings, setAlgorithmSettings] = useState<AlgorithmSettingsState>(defaultAlgorithmSettings);
     const [fitnessFunctionSettings, setFitnessFunctionSettings] = useState<FitnessFunctionSettingsState>(defaultFitnessFunctionSettings);
     const {schedule, preferences} = useContext(DataContext);
 
     const runAlgorithm = async () => {
         if (!schedule || !preferences) {
-            console.error("Schedule file or preferences file is not set");
+            setError('Please upload schedule and preferences before running the algorithm.');
             return;
         }
 
@@ -69,7 +71,9 @@ const Settings: React.FC = () => {
 
             router.push('/pages/results');
         } catch (error: unknown) {
-            console.log("Error sending data to backend:", (error as Error).message);
+            setError(
+                error instanceof Error ? error.message : 'An unexpected error occurred'
+            );
             setIsRunning(false);
         }
     };
@@ -115,6 +119,7 @@ const Settings: React.FC = () => {
             </div>
 
             <div className="space-y-6">
+                {error && <ErrorBanner error={error} />}
                 <AlgorithmSettingsSection settings={algorithmSettings} setSettings={setAlgorithmSettings} />
                 <FitnessFunctionSettingsSection settings={fitnessFunctionSettings} setSettings={setFitnessFunctionSettings} />
             </div>

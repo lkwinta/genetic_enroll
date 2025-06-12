@@ -6,6 +6,7 @@ export type FitnessHistory = {
     max_fitness: number;
     min_fitness: number;
     avg_fitness: number;
+    best_student_preference: number;
 }[];
 
 export interface AlgorithmFitnessPlotProps {
@@ -22,6 +23,7 @@ const AlgorithmFitnessPlot: React.FC<AlgorithmFitnessPlotProps> = ({ fitnessHist
     const maxLineColor = isDark.current ? 'rgb(239, 68, 68)' : 'rgb(220, 38, 38)';
     const minLineColor = isDark.current ? 'rgb(250, 204, 21)' : 'rgb(234, 179, 8)';
     const avgLineColor = isDark.current ? 'rgb(34, 197, 94)' : 'rgb(22, 163, 74)';
+    const bestStudentPreferenceColor = isDark.current ? 'rgb(59, 130, 246)' : 'rgb(37, 99, 235)';
     const textColor = isDark.current ? 'rgb(255, 255, 255)' : 'rgb(31, 41, 55)';
     const gridColor = isDark.current ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
     const tooltipStyle: React.CSSProperties = {
@@ -52,6 +54,12 @@ const AlgorithmFitnessPlot: React.FC<AlgorithmFitnessPlotProps> = ({ fitnessHist
                             type="monotone"
                             dataKey="max_fitness"
                             stroke={maxLineColor}
+                            strokeWidth={2}
+                            dot={false}/>
+                        <Line
+                            type="monotone"
+                            dataKey="best_student_preference"
+                            stroke={bestStudentPreferenceColor}
                             strokeWidth={2}
                             dot={false}/>
                         <XAxis 

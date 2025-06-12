@@ -228,17 +228,19 @@ class Service:
             scores = ray.get(scores)
 
             max_f = max(scores)
+            max_index = scores.index(max_f)
             avg_f = sum(scores) / len(scores)
             min_f = min(scores)
             self.history.append({
                 "generation": gen,
                 "max_fitness": max_f,
                 "avg_fitness": round(avg_f, 3),
-                "min_fitness": min_f
+                "min_fitness": min_f,
+                "best_student_preference": preference_score(population[max_index], self.pref, self.pref_dict)
             })
             if max_f > self.current_best_fitness:
                 self.current_best_fitness = max_f
-                self.current_best_individual = population[scores.index(max_f)]
+                self.current_best_individual = population[max_index]
                 stagnation_count = 0
             else:
                 stagnation_count += 1
