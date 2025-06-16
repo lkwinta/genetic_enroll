@@ -20,13 +20,18 @@ const TimetablePage: NextPage = () => {
 
     const { lessons, subjectColorMap } = parseScheduleIntoLessons(schedule);
     const preferencesMap = parseStudentsPreferences(preferences);
-
     const lessonsWithPreferences = Object.fromEntries(
         Object.entries(lessons).map(([timeSlot, lessonList]) =>
             [
                 timeSlot,
-                lessonList.map(lesson => {
-                    const lesson_id = `${lesson.subject}-${lesson.group_id}`
+                lessonList
+                .filter(lesson => {
+                    const lesson_id = `${lesson.subject}-${lesson.group_id}`;
+                    return preferencesMap[lesson_id] && preferencesMap[lesson_id][0] > 0;
+                })
+                .map(lesson => {
+                    const lesson_id = `${lesson.subject}-${lesson.group_id}`;
+
                     const pointsAssigned = preferencesMap[lesson_id][0] || 0;
                     const maxCount = preferencesMap[lesson_id][2] || 0;
                     return {
